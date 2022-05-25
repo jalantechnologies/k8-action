@@ -40,7 +40,7 @@ jobs:
 
       - name: Extract branch name
         id: extract_branch
-        uses: ./.github/actions/branch-id
+        uses: jalantechnologies/k8-gh-action/actions/branch-id
         with:
           branch: ${{ inputs.branch }}
 

@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build application
-        uses: ./.github/actions/build
+        uses: jalantechnologies/k8-gh-action/.github/actions/build
         with:
           image_tag: ${{ inputs.app }}
 
@@ -47,7 +47,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run linting check
-        uses: ./.github/actions/lint
+        uses: jalantechnologies/k8-gh-action/actions/lint
         with:
           image_tag: ${{ inputs.app }}
 
@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run automated test cases
-        uses: ./.github/actions/test
+        uses: jalantechnologies/k8-gh-action/actions/test
 
   preview:
     runs-on: ubuntu-latest
@@ -74,7 +74,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: ./.github/actions/deploy
+      - uses: jalantechnologies/k8-gh-action/actions/deploy
         id: deploy
         with:
           app_name: ${{ inputs.app }}
