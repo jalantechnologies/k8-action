@@ -223,3 +223,14 @@ jobs:
           number: ${{ steps.extract_pr_number.outputs.number }}
           message: |
             Preview is available at - ${{ steps.deploy.outputs.url }}
+
+  clean:
+    runs-on: ubuntu-latest
+    if: ${{ always() && !cancelled() }}
+    # list all jobs after which clean up should be performed
+    needs: [ 'lint', 'test', 'preview' ]
+    steps:
+      - uses: geekyeggo/delete-artifact@v1
+        with:
+          name: myappartifact
+          failOnError: false
