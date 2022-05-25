@@ -1,0 +1,54 @@
+name: clean
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+      do_access_token:
+        required: true
+        type: string
+      do_cluster_id:
+        required: true
+        type: string
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    # make sure to run a single job against the provided branch
+    # following will prioritize the most recent invocation and cancel existing ones if any were found
+    # important - make sure preview and clean are using same group
+    concurrency:
+      group: preview-${{ inputs.branch }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ inputs.do_access_token }}
+
+      - name: Setup Kubernetes
+        env:
+          DO_CLUSTER_ID: ${{ inputs.do_cluster_id }}
+        run: doctl kubernetes cluster kubeconfig save $DO_CLUSTER_ID
+
+      - name: Extract branch name
+        id: extract_branch
+        uses: ./.github/actions/branch-id
+        with:
+          branch: ${{ inputs.branch }}
+
+      - name: Clean up - Preview
+        env:
+          KUBE_NS: ${{ inputs.app }}-preview
+          KUBE_APP: ${{ inputs.app }}-preview-${{ steps.extract_branch.outputs.branch_id }}
+        run: |
+          kubectl -n "$KUBE_NS" delete ingresses,services,deployments -l app="$KUBE_APP"
+          kubectl -n "$KUBE_NS" delete secret $KUBE_APP-env-vars || true
