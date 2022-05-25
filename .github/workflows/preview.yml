@@ -1,0 +1,86 @@
+name: preview
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build application
+        uses: ./.github/actions/build
+        with:
+          image_tag: ${{ inputs.app }}
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run linting check
+        uses: ./.github/actions/lint
+        with:
+          image_tag: ${{ inputs.app }}
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run automated test cases
+        uses: ./.github/actions/test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    # make sure to run a single job against the provided branch
+    # following will prioritize the most recent invocation and cancel existing ones if any were found
+    # important - make sure preview and clean are using same group
+    concurrency:
+      group: preview-${{ inputs.branch }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: ./.github/actions/deploy
+        id: deploy
+        with:
+          app_name: ${{ inputs.app }}
+          app_namespace: ${{ inputs.app }}-preview
+          app_environment: preview
+          app_hostname: preview.sunenergy.com.au
+          branch: ${{ inputs.branch }}
+          docker_registry: registry.hub.docker.com/sunenergy
+          docker_repository: ${{ inputs.app }}
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_password: ${{ secrets.DOCKER_PASSWORD }}
+          doppler_token: ${{ secrets.DOPPLER_PREVIEW_TOKEN }}
+          do_access_token: ${{ secrets.DO_ACCESS_TOKEN }}
+          do_cluster_id: ${{ secrets.DO_CLUSTER_ID }}
+
+      - name: Extract pull request number
+        id: extract_pr_number
+        uses: jwalton/gh-find-current-pr@v1
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          hide_and_recreate: true
+          hide_classify: 'OUTDATED'
+          number: ${{ steps.extract_pr_number.outputs.number }}
+          message: |
+            Preview is available at - ${{ steps.deploy.outputs.url }}
