@@ -9,6 +9,12 @@ on:
       branch:
         required: true
         type: string
+      hostname:
+        required: true
+        type: string
+      docker_registry:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -63,9 +69,9 @@ jobs:
           app_name: ${{ inputs.app }}
           app_namespace: ${{ inputs.app }}-preview
           app_environment: preview
-          app_hostname: preview.sunenergy.com.au
+          app_hostname: ${{ inputs.hostname }}
           branch: ${{ inputs.branch }}
-          docker_registry: registry.hub.docker.com/sunenergy
+          docker_registry: ${{ inputs.docker_registry }}
           docker_repository: ${{ inputs.app }}
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_password: ${{ secrets.DOCKER_PASSWORD }}
