@@ -39,65 +39,65 @@ jobs:
         with:
           image_tag: ${{ inputs.app }}
 
-  lint:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Run linting check
-        uses: jalantechnologies/k8-gh-action/actions/lint
-        with:
-          image_tag: ${{ inputs.app }}
-
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Run automated test cases
-        uses: jalantechnologies/k8-gh-action/actions/test
-
-  preview:
-    runs-on: ubuntu-latest
-    needs: build
-    # make sure to run a single job against the provided branch
-    # following will prioritize the most recent invocation and cancel existing ones if any were found
-    # important - make sure preview and clean are using same group
-    concurrency:
-      group: preview-${{ inputs.branch }}
-      cancel-in-progress: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - uses: jalantechnologies/k8-gh-action/actions/deploy
-        id: deploy
-        with:
-          app_name: ${{ inputs.app }}
-          app_namespace: ${{ inputs.app }}-preview
-          app_environment: preview
-          app_hostname: ${{ inputs.hostname }}
-          branch: ${{ inputs.branch }}
-          docker_registry: ${{ inputs.docker_registry }}
-          docker_repository: ${{ inputs.app }}
-          docker_username: ${{ secrets.docker_username }}
-          docker_password: ${{ secrets.docker_password }}
-          doppler_token: ${{ secrets.doppler_token }}
-          do_access_token: ${{ secrets.do_access_token }}
-          do_cluster_id: ${{ secrets.do_cluster_id }}
-
-      - name: Extract pull request number
-        id: extract_pr_number
-        uses: jwalton/gh-find-current-pr@v1
-
-      - uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          hide_and_recreate: true
-          hide_classify: 'OUTDATED'
-          number: ${{ steps.extract_pr_number.outputs.number }}
-          message: |
-            Preview is available at - ${{ steps.deploy.outputs.url }}
+#  lint:
+#    runs-on: ubuntu-latest
+#    needs: build
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#
+#      - name: Run linting check
+#        uses: jalantechnologies/k8-gh-action/actions/lint
+#        with:
+#          image_tag: ${{ inputs.app }}
+#
+#  test:
+#    runs-on: ubuntu-latest
+#    needs: build
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#
+#      - name: Run automated test cases
+#        uses: jalantechnologies/k8-gh-action/actions/test
+#
+#  preview:
+#    runs-on: ubuntu-latest
+#    needs: build
+#    # make sure to run a single job against the provided branch
+#    # following will prioritize the most recent invocation and cancel existing ones if any were found
+#    # important - make sure preview and clean are using same group
+#    concurrency:
+#      group: preview-${{ inputs.branch }}
+#      cancel-in-progress: true
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#
+#      - uses: jalantechnologies/k8-gh-action/actions/deploy
+#        id: deploy
+#        with:
+#          app_name: ${{ inputs.app }}
+#          app_namespace: ${{ inputs.app }}-preview
+#          app_environment: preview
+#          app_hostname: ${{ inputs.hostname }}
+#          branch: ${{ inputs.branch }}
+#          docker_registry: ${{ inputs.docker_registry }}
+#          docker_repository: ${{ inputs.app }}
+#          docker_username: ${{ secrets.docker_username }}
+#          docker_password: ${{ secrets.docker_password }}
+#          doppler_token: ${{ secrets.doppler_token }}
+#          do_access_token: ${{ secrets.do_access_token }}
+#          do_cluster_id: ${{ secrets.do_cluster_id }}
+#
+#      - name: Extract pull request number
+#        id: extract_pr_number
+#        uses: jwalton/gh-find-current-pr@v1
+#
+#      - uses: marocchino/sticky-pull-request-comment@v2
+#        with:
+#          hide_and_recreate: true
+#          hide_classify: 'OUTDATED'
+#          number: ${{ steps.extract_pr_number.outputs.number }}
+#          message: |
+#            Preview is available at - ${{ steps.deploy.outputs.url }}
