@@ -15,21 +15,17 @@ on:
       docker_registry:
         required: true
         type: string
+    secrets:
       docker_username:
         required: true
-        type: string
       docker_password:
         required: true
-        type: string
       doppler_token:
         required: true
-        type: string
       do_access_token:
         required: true
-        type: string
       do_cluster_id:
         required: true
-        type: string
 
 jobs:
   build:
@@ -88,11 +84,11 @@ jobs:
           branch: ${{ inputs.branch }}
           docker_registry: ${{ inputs.docker_registry }}
           docker_repository: ${{ inputs.app }}
-          docker_username: ${{ inputs.docker_username }}
-          docker_password: ${{ inputs.docker_password }}
-          doppler_token: ${{ inputs.doppler_token }}
-          do_access_token: ${{ inputs.do_access_token }}
-          do_cluster_id: ${{ inputs.do_cluster_id }}
+          docker_username: ${{ secrets.docker_username }}
+          docker_password: ${{ secrets.docker_password }}
+          doppler_token: ${{ secrets.doppler_token }}
+          do_access_token: ${{ secrets.do_access_token }}
+          do_cluster_id: ${{ secrets.do_cluster_id }}
 
       - name: Extract pull request number
         id: extract_pr_number

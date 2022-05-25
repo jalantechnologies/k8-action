@@ -9,12 +9,11 @@ on:
       branch:
         required: true
         type: string
+    secrets:
       do_access_token:
         required: true
-        type: string
       do_cluster_id:
         required: true
-        type: string
 
 jobs:
   clean:
@@ -32,11 +31,11 @@ jobs:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
-          token: ${{ inputs.do_access_token }}
+          token: ${{ secrets.do_access_token }}
 
       - name: Setup Kubernetes
         env:
-          DO_CLUSTER_ID: ${{ inputs.do_cluster_id }}
+          DO_CLUSTER_ID: ${{ secrets.do_cluster_id }}
         run: doctl kubernetes cluster kubeconfig save $DO_CLUSTER_ID
 
       - name: Extract branch name
