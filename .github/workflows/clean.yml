@@ -3,7 +3,7 @@ name: clean
 on:
   workflow_call:
     inputs:
-      app:
+      app_name:
         required: true
         type: string
       branch:
@@ -40,14 +40,16 @@ jobs:
 
       - name: Extract branch name
         id: extract_branch
-        uses: jalantechnologies/k8-gh-action/actions/branch-id
-        with:
-          branch: ${{ inputs.branch }}
+        shell: bash
+        run: |
+          BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g' | tr '[:upper:]' '[:lower:]')
+          echo "##[set-output name=branch;]$(echo $BRANCH_NAME | sed -e 's/[_\/]/-/g')"
+          echo "##[set-output name=branch_id;]$(echo $BRANCH_NAME | sed -e 's/[_\/\-]//g' | cut -c -10)"
 
       - name: Clean up - Preview
         env:
-          KUBE_NS: ${{ inputs.app }}-preview
-          KUBE_APP: ${{ inputs.app }}-preview-${{ steps.extract_branch.outputs.branch_id }}
+          KUBE_NS: ${{ inputs.app_name }}-preview
+          KUBE_APP: ${{ inputs.app_name }}-preview-${{ steps.extract_branch.outputs.branch_id }}
         run: |
           kubectl -n "$KUBE_NS" delete ingresses,services,deployments -l app="$KUBE_APP"
           kubectl -n "$KUBE_NS" delete secret $KUBE_APP-env-vars || true
