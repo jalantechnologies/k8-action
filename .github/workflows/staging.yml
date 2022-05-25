@@ -140,10 +140,6 @@ jobs:
           
           echo "##[set-output name=name;]$(echo $IMAGE_NAME)"
 
-      - name: Extract pull request number
-        id: extract_pr_number
-        uses: jwalton/gh-find-current-pr@v1
-
       - name: Deploy to EKS
         shell: bash
         id: eks_deploy
