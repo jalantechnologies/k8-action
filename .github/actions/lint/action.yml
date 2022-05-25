@@ -1,0 +1,20 @@
+name: 'Lint'
+description: 'Run linting check'
+inputs:
+  image_tag:
+    required: true
+    description: 'Image to lookup for running checks'
+runs:
+  using: 'composite'
+  steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: myappartifact
+        path: /tmp
+
+    - name: Run tests
+      shell: bash
+      run: |
+        docker load --input /tmp/myappimage.tar
+        docker run -t ${{ inputs.image_tag }} npm run lint

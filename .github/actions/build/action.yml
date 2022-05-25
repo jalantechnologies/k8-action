@@ -1,0 +1,21 @@
+name: 'Builds application'
+description: 'Builds docker image for the application'
+inputs:
+  image_tag:
+    required: false
+    description: 'Tag which will assigned to the built image'
+    default: myapp
+runs:
+  using: 'composite'
+  steps:
+    - name: Build docker image
+      shell: bash
+      run: |
+        docker build --platform linux/amd64 -t ${{ inputs.image_tag }} .
+        docker save ${{ inputs.image_tag }} > /tmp/myappimage.tar
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: myappartifact
+        path: /tmp/myappimage.tar
