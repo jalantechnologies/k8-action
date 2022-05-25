@@ -51,7 +51,7 @@ jobs:
         if: "${{ env.SONAR_TOKEN != '' }}"
         with:
           args: >
-            -Dsonar.pullrequest.key${{ inputs.pull_request_number }}
+            -Dsonar.pullrequest.key=${{ inputs.pull_request_number }}
             -Dsonar.pullrequest.branch=${{ inputs.branch }}
             -Dsonar.pullrequest.base=${{ inputs.branch_base }}
 
