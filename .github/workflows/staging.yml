@@ -12,9 +12,6 @@ on:
       branch:
         required: true
         type: string
-      commit:
-        required: true
-        type: string
       branch_base:
         required: false
         type: string
@@ -203,7 +200,6 @@ jobs:
         shell: bash
         id: deploy
         env:
-          COMMIT: ${{ inputs.commit }}
           DOPPLER_PROJECT: ${{ inputs.app_name }}
           DOPPLER_CONFIG: preview
           DOPPLER_TOKEN: ${{ secrets.doppler_token }}
