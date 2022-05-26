@@ -25,8 +25,14 @@ jobs:
       group: preview-${{ inputs.branch }}
       cancel-in-progress: true
     steps:
-      - name: Checkout
+      - name: Checkout (source)
         uses: actions/checkout@v2
+
+      - name: Checkout (action)
+        uses: actions/checkout@v2
+        with:
+          repository: jalantechnologies/k8-gh-action
+          path: action
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -51,5 +57,4 @@ jobs:
           KUBE_NS: ${{ inputs.app_name }}-preview
           KUBE_APP: ${{ inputs.app_name }}-preview-${{ steps.extract_branch.outputs.branch_id }}
         run: |
-          kubectl -n "$KUBE_NS" delete ingresses,services,deployments -l app="$KUBE_APP"
-          kubectl -n "$KUBE_NS" delete secret $KUBE_APP-env-vars || true
+          source action/src/scripts/kube/clean.sh

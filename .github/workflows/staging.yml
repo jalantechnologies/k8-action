@@ -146,7 +146,7 @@ jobs:
       group: preview-${{ inputs.branch }}
       cancel-in-progress: true
     steps:
-      - name: Checkout (shared)
+      - name: Checkout (source)
         uses: actions/checkout@v2
 
       - name: Checkout (action)
