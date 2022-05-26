@@ -146,8 +146,14 @@ jobs:
       group: preview-${{ inputs.branch }}
       cancel-in-progress: true
     steps:
-      - name: Checkout
+      - name: Checkout (shared)
         uses: actions/checkout@v2
+
+      - name: Checkout (action)
+        uses: actions/checkout@v2
+        with:
+          repository: jalantechnologies/k8-gh-action
+          path: action
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -209,7 +215,7 @@ jobs:
           KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
           KUBE_INGRESS_HOSTNAME: ${{ steps.extract_branch.outputs.branch }}.${{ inputs.app_hostname }}
         run: |
-          source deploy/kube.sh
+          source action/src/scripts/kube/deploy.sh
           echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"
 
       - name: Extract pull request number
