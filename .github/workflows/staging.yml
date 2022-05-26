@@ -191,9 +191,8 @@ jobs:
           DOCKER_REPOSITORY: ${{ inputs.app_name }}
           DOCKER_USERNAME: ${{ secrets.docker_username }}
           DOCKER_PASSWORD: ${{ secrets.docker_password }}
-          IMAGE_TAG: $GITHUB_SHA
         run: |
-          IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:$IMAGE_TAG
+          IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:$GITHUB_SHA
           
           docker login $DOCKER_REGISTRY --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
           docker load --input /tmp/myappimage.tar
