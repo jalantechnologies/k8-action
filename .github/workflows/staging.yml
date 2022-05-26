@@ -214,7 +214,7 @@ jobs:
           KUBE_APP: ${{ inputs.app_name }}-preview-${{ steps.extract_branch.outputs.branch_id }}
           KUBE_ENV: preview
           KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
-          KUBE_INGRESS_HOSTNAME: ${{ steps.extract_branch.outputs.branch }}.${{ inputs.app_hostname }}
+          KUBE_INGRESS_HOSTNAME: ${{ steps.extract_branch.outputs.branch_id }}.${{ inputs.app_hostname }}
         run: |
           source action/src/scripts/kube/deploy.sh
           echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"
