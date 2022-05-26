@@ -53,11 +53,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build docker image
-        shell: bash
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: ${{ inputs.app_name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          outputs: type=docker,dest=/tmp/myappimage.tar
+
+      # This ugly bit is necessary if you don't want your cache to grow forever
+      # till it hits GitHub's limit of 5GB.
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
         run: |
-          docker build --platform linux/amd64 -t ${{ inputs.app_name }} .
-          docker save ${{ inputs.app_name }} > /tmp/myappimage.tar
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -107,8 +132,14 @@ jobs:
     needs: [ 'build', 'test' ]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout (source)
         uses: actions/checkout@v2
+
+      - name: Checkout (action)
+        uses: actions/checkout@v2
+        with:
+          repository: jalantechnologies/k8-gh-action
+          path: action
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -138,7 +169,7 @@ jobs:
           DOCKER_REPOSITORY: ${{ inputs.app_name }}
           DOCKER_USERNAME: ${{ secrets.docker_username }}
           DOCKER_PASSWORD: ${{ secrets.docker_password }}
-          IMAGE_TAG: production
+          IMAGE_TAG: $GITHUB_SHA
         run: |
           IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:$IMAGE_TAG
           
@@ -152,6 +183,8 @@ jobs:
       - name: Deploy to kubernetes
         shell: bash
         id: deploy
+        # kube configurations can use following environment variables along with the default ones provided by GitHub action
+        # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
         env:
           DOPPLER_PROJECT: ${{ inputs.app_name }}
           DOPPLER_CONFIG: production
@@ -162,5 +195,16 @@ jobs:
           KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
           KUBE_INGRESS_HOSTNAME: ${{ inputs.app_hostname }}
         run: |
-          source deploy/kube.sh
+          source action/src/scripts/kube/deploy.sh
           echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"
+
+  clean:
+    runs-on: ubuntu-latest
+    if: ${{ always() && !cancelled() }}
+    # list all jobs after which clean up should be performed
+    needs: [ 'lint', 'test', 'deploy' ]
+    steps:
+      - uses: geekyeggo/delete-artifact@v1
+        with:
+          name: myappartifact
+          failOnError: false

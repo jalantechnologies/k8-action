@@ -191,7 +191,7 @@ jobs:
           DOCKER_REPOSITORY: ${{ inputs.app_name }}
           DOCKER_USERNAME: ${{ secrets.docker_username }}
           DOCKER_PASSWORD: ${{ secrets.docker_password }}
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch_id }}
+          IMAGE_TAG: $GITHUB_SHA
         run: |
           IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:$IMAGE_TAG
           
@@ -205,6 +205,8 @@ jobs:
       - name: Deploy to kubernetes
         shell: bash
         id: deploy
+        # kube configurations can use following environment variables along with the default ones provided by GitHub action
+        # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
         env:
           DOPPLER_PROJECT: ${{ inputs.app_name }}
           DOPPLER_CONFIG: preview
