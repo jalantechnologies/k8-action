@@ -39,16 +39,16 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    env:
-      SONAR_TOKEN: ${{ secrets.sonar_token }}
-      SONAR_HOST_URL: ${{ secrets.sonar_host_url }}
-    if: "${{ env.SONAR_TOKEN != '' }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: sonarqube-scan-branch
         uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.sonar_token }}
+          SONAR_HOST_URL: ${{ secrets.sonar_host_url }}
+        if: "${{ env.SONAR_TOKEN != '' }}"
         with:
           args: >
             -Dsonar.pullrequest.key=${{ inputs.pull_request_number }}
