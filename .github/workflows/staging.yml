@@ -25,12 +25,12 @@ on:
         required: true
       docker_password:
         required: true
-      doppler_token:
-        required: true
       do_access_token:
         required: true
       do_cluster_id:
         required: true
+      doppler_token:
+        required: false
       sonar_token:
         required: false
       sonar_host_url:
@@ -39,16 +39,16 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.sonar_token }}
+      SONAR_HOST_URL: ${{ secrets.sonar_host_url }}
+    if: "${{ env.SONAR_TOKEN != '' }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: sonarqube-scan-branch
         uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.sonar_token }}
-          SONAR_HOST_URL: ${{ secrets.sonar_host_url }}
-        if: "${{ env.SONAR_TOKEN != '' }}"
         with:
           args: >
             -Dsonar.pullrequest.key=${{ inputs.pull_request_number }}
@@ -167,6 +167,9 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save $DO_CLUSTER_ID
 
       - name: Install doppler
+        env:
+          DOPPLER_TOKEN: ${{ secrets.doppler_token }}
+        if: "${{ env.DOPPLER_TOKEN != '' }}"
         uses: dopplerhq/cli-action@v1
 
       - name: Download artifact
