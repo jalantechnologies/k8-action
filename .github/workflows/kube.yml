@@ -1,9 +1,12 @@
-name: production
+name: kube
 
 on:
   workflow_call:
     inputs:
       app_name:
+        required: true
+        type: string
+      app_env:
         required: true
         type: string
       app_hostname:
@@ -12,6 +15,12 @@ on:
       branch:
         required: true
         type: string
+      branch_base:
+        required: false
+        type: string
+      pull_request_number:
+        required: false
+        type: number
       steps:
         required: false
         type: string
@@ -43,10 +52,22 @@ jobs:
 
       - name: sonarqube-scan-branch
         uses: sonarsource/sonarqube-scan-action@master
+        if: inputs.pull_request_number
         env:
           SONAR_TOKEN: ${{ secrets.sonar_token }}
           SONAR_HOST_URL: ${{ secrets.sonar_host_url }}
-        if: "${{ env.SONAR_TOKEN != '' }}"
+        with:
+          args: >
+            -Dsonar.pullrequest.key=${{ inputs.pull_request_number }}
+            -Dsonar.pullrequest.branch=${{ inputs.branch }}
+            -Dsonar.pullrequest.base=${{ inputs.branch_base }}
+
+      - name: sonarqube-scan-branch
+        uses: sonarsource/sonarqube-scan-action@master
+        if: inputs.pull_request_number == ''
+        env:
+          SONAR_TOKEN: ${{ secrets.sonar_token }}
+          SONAR_HOST_URL: ${{ secrets.sonar_host_url }}
         with:
           args: >
             -Dsonar.branch.name=${{ inputs.branch }}
@@ -54,6 +75,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
@@ -70,6 +94,9 @@ jobs:
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
@@ -96,8 +123,14 @@ jobs:
         uses: ./platform/.github/actions/test
 
   deploy:
-    needs: [ 'build', 'test' ]
     runs-on: ubuntu-latest
+    needs: build
+    if: inputs.steps == '' || contains(join(inputs.steps), 'deploy')
+    # make sure to run a single deployment job against the provided branch
+    # following will prioritize the most recent invocation and cancel existing ones if any were found
+    concurrency:
+      group: deploy-${{ inputs.app_env }}-${{ inputs.branch }}
+      cancel-in-progress: true
     steps:
       - name: Checkout (source)
         uses: actions/checkout@v2
@@ -113,7 +146,7 @@ jobs:
         uses: ./platform/.github/actions/deploy
         with:
           app_name: ${{ inputs.app_name }}
-          app_env: production
+          app_env: ${{ inputs.app_env }}
           app_hostname: ${{ inputs.app_hostname }}
           branch: ${{ inputs.branch }}
           docker_registry: ${{ secrets.docker_registry }}
@@ -122,6 +155,20 @@ jobs:
           do_access_token: ${{ secrets.do_access_token }}
           do_cluster_id: ${{ secrets.do_cluster_id }}
           doppler_token: ${{ secrets.doppler_token }}
+
+      - name: Extract pull request number
+        id: extract_pr_number
+        uses: jwalton/gh-find-current-pr@v1
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        # only run this step if we were able to find an open PR
+        if: steps.extract_pr_number.outputs.number
+        with:
+          hide_and_recreate: true
+          hide_classify: 'OUTDATED'
+          number: ${{ steps.extract_pr_number.outputs.number }}
+          message: |
+            Deployment is available at - ${{ steps.deploy.outputs.url }}
 
   clean:
     runs-on: ubuntu-latest
