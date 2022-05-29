@@ -44,3 +44,4 @@ runs:
       with:
         name: myappartifact
         path: /tmp/myappimage.tar
+        retention-days: 1
