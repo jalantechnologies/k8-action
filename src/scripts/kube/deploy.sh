@@ -15,11 +15,10 @@ echo "kube ingress hostname - $KUBE_INGRESS_HOSTNAME"
 kubectl get namespace $KUBE_NS || kubectl create namespace $KUBE_NS
 
 # create secrets which will be consumed by the deployment using environment variables
-
 kubectl -n $KUBE_NS delete secret $KUBE_APP-env-vars || true
 
 if [[ -n "$DOPPLER_TOKEN" ]]; then
-  kubectl -n $KUBE_NS create secret generic $KUBE_APP-env-vars --from-env-file <(doppler secrets download --no-file --format docker --project $DOPPLER_PROJECT --config $DOPPLER_CONFIG)
+    kubectl -n $KUBE_NS create secret generic $KUBE_APP-env-vars --from-env-file <(doppler secrets download --no-file --format docker --project $DOPPLER_PROJECT --config $DOPPLER_CONFIG)
 fi
 
 # apply kube config (shared / env)
@@ -28,15 +27,15 @@ kube_shared_dir="lib/kube/shared"
 kube_env_dir="lib/kube/$KUBE_ENV"
 
 if [ -d "$kube_shared_dir" ]; then
-  for file in "$kube_shared_dir"/*; do
-    envsubst <"$file" | kubectl -n "$KUBE_NS" apply -f -
-  done
+    for file in "$kube_shared_dir"/*; do
+        envsubst <"$file" | kubectl -n "$KUBE_NS" apply -f -
+    done
 fi
 
 if [ -d "$kube_env_dir" ]; then
-  for file in "$kube_env_dir"/*; do
-    envsubst <"$file" | kubectl -n "$KUBE_NS" apply -f -
-  done
+    for file in "$kube_env_dir"/*; do
+        envsubst <"$file" | kubectl -n "$KUBE_NS" apply -f -
+    done
 fi
 
 echo "deployed to - https://$KUBE_INGRESS_HOSTNAME"

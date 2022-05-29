@@ -103,7 +103,7 @@ jobs:
           repository: jalantechnologies/platform-github
           path: platform
 
-      - name: Runs lint checks
+      - name: Run lint checks
         uses: ./platform/.github/actions/lint
         with:
           tag: ${{ inputs.app_name }}
@@ -145,7 +145,7 @@ jobs:
           repository: jalantechnologies/platform-github
           path: platform
 
-      - name: Deploy built application to Kubernetes
+      - name: Deploy application to Kubernetes
         id: deploy
         uses: ./platform/.github/actions/deploy
         with:

@@ -1,5 +1,5 @@
 name: 'deploy'
-description: 'Deploy built application to Kubernetes'
+description: 'Deploy application to Kubernetes'
 inputs:
   app_name:
     required: true

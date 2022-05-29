@@ -1,5 +1,5 @@
 name: 'test'
-description: 'Runs automated test cases'
+description: 'Run automated test cases'
 runs:
   using: composite
   steps:

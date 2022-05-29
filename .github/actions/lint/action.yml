@@ -1,5 +1,5 @@
 name: 'lint'
-description: 'Runs lint checks'
+description: 'Run lint checks'
 inputs:
   tag:
     required: true
