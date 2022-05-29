@@ -139,7 +139,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: jalantechnologies/platform-github
-          path: action
+          path: platform
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -197,7 +197,7 @@ jobs:
           KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
           KUBE_INGRESS_HOSTNAME: ${{ inputs.app_hostname }}
         run: |
-          source action/src/scripts/kube/deploy.sh
+          source platform/src/scripts/kube/deploy.sh
           echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"
 
   clean:
