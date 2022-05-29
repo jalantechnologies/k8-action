@@ -1,0 +1,20 @@
+name: 'lint'
+description: 'Runs lint checks'
+inputs:
+  tag:
+    required: true
+    description: 'Tag via which docker image will be selected'
+runs:
+  using: composite
+  steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: myappartifact
+        path: /tmp
+
+    - name: Run linting
+      shell: bash
+      run: |
+        docker load --input /tmp/myappimage.tar
+        docker run -t ${{ inputs.tag }} npm run lint

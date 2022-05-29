@@ -61,9 +61,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
@@ -80,40 +77,30 @@ jobs:
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
     steps:
-      - name: Checkout
+      - name: Checkout (action)
         uses: actions/checkout@v2
-
-      - name: Download artifact
-        uses: actions/download-artifact@v2
         with:
-          name: myappartifact
-          path: /tmp
+          repository: jalantechnologies/platform-github
+          path: platform
 
-      - name: Run linting
-        shell: bash
-        run: |
-          docker load --input /tmp/myappimage.tar
-          docker run -t ${{ inputs.app_name }} npm run lint
+      - name: Runs lint checks
+        uses: ./platform/.github/actions/lint
+        with:
+          tag: ${{ inputs.app_name }}
 
   test:
     runs-on: ubuntu-latest
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'test')
     steps:
-      - name: Checkout
+      - name: Checkout (action)
         uses: actions/checkout@v2
-
-      - name: Download artifact
-        uses: actions/download-artifact@v2
         with:
-          name: myappartifact
-          path: /tmp
+          repository: jalantechnologies/platform-github
+          path: platform
 
-      - name: Run tests
-        shell: bash
-        run: |
-          docker load --input /tmp/myappimage.tar
-          docker-compose -f docker-compose.test.yml up --exit-code-from app
+      - name: Run automated test cases
+        uses: ./platform/.github/actions/test
 
   preview:
     runs-on: ubuntu-latest
@@ -176,12 +163,12 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.docker_password }}
         run: |
           IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:$GITHUB_SHA
-          
+
           docker login $DOCKER_REGISTRY --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
           docker load --input /tmp/myappimage.tar
           docker tag ${{ inputs.app_name }} $IMAGE_NAME
           docker push $IMAGE_NAME
-          
+
           echo "##[set-output name=name;]$(echo $IMAGE_NAME)"
 
       - name: Deploy to kubernetes
