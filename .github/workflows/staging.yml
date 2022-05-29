@@ -133,6 +133,7 @@ jobs:
         uses: ./platform/.github/actions/deploy
         with:
           app_name: ${{ inputs.app_name }}
+          app_env: preview
           app_hostname: ${{ inputs.app_hostname }}
           branch: ${{ inputs.branch }}
           docker_registry: ${{ secrets.docker_registry }}

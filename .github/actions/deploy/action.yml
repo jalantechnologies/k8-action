@@ -4,6 +4,9 @@ inputs:
   app_name:
     required: true
     description: ''
+  app_env:
+    required: true
+    description: 'Application environment based on which doppler configuration, kube namespace and kube spec files will be selected'
   app_hostname:
     required: true
     description: ''
@@ -91,13 +94,13 @@ runs:
       # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
       env:
         DOPPLER_PROJECT: ${{ inputs.app_name }}
-        DOPPLER_CONFIG: preview
+        DOPPLER_CONFIG: ${{ inputs.app_env }}
         DOPPLER_TOKEN: ${{ inputs.doppler_token }}
-        KUBE_NS: ${{ inputs.app_name }}-preview
-        KUBE_APP: ${{ inputs.app_name }}-preview-${{ steps.extract_branch.outputs.branch_id }}
-        KUBE_ENV: preview
+        KUBE_NS: ${{ inputs.app_name }}-${{ inputs.app_env }}
+        KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_id }}
+        KUBE_ENV: ${{ inputs.app_env }}
         KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
-        KUBE_INGRESS_HOSTNAME: ${{ steps.extract_branch.outputs.branch_id }}.${{ inputs.app_hostname }}
+        KUBE_INGRESS_HOSTNAME: ${{ format(inputs.app_hostname, inputs.app_env, inputs.branch_id) }}
       run: |
         source platform/src/scripts/kube/deploy.sh
         echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"

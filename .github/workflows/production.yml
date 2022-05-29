@@ -108,64 +108,20 @@ jobs:
           repository: jalantechnologies/platform-github
           path: platform
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.do_access_token }}
-
-      - name: Setup Kubernetes
-        shell: bash
-        env:
-          DO_CLUSTER_ID: ${{ secrets.do_cluster_id }}
-        run: doctl kubernetes cluster kubeconfig save $DO_CLUSTER_ID
-
-      - name: Install doppler
-        env:
-          DOPPLER_TOKEN: ${{ secrets.doppler_token }}
-        if: "${{ env.DOPPLER_TOKEN != '' }}"
-        uses: dopplerhq/cli-action@v1
-
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: myappartifact
-          path: /tmp
-
-      - name: Push docker image
-        shell: bash
-        id: docker_image
-        env:
-          DOCKER_REGISTRY: ${{ secrets.docker_registry }}
-          DOCKER_REPOSITORY: ${{ inputs.app_name }}
-          DOCKER_USERNAME: ${{ secrets.docker_username }}
-          DOCKER_PASSWORD: ${{ secrets.docker_password }}
-        run: |
-          IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:$GITHUB_SHA
-
-          docker login $DOCKER_REGISTRY --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
-          docker load --input /tmp/myappimage.tar
-          docker tag ${{ inputs.app_name }} $IMAGE_NAME
-          docker push $IMAGE_NAME
-
-          echo "##[set-output name=name;]$(echo $IMAGE_NAME)"
-
-      - name: Deploy to kubernetes
-        shell: bash
+      - name: Deploy built application to Kubernetes
         id: deploy
-        # kube configurations can use following environment variables along with the default ones provided by GitHub action
-        # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-        env:
-          DOPPLER_PROJECT: ${{ inputs.app_name }}
-          DOPPLER_CONFIG: production
-          DOPPLER_TOKEN: ${{ secrets.doppler_token }}
-          KUBE_NS: ${{ inputs.app_name }}-production
-          KUBE_APP: ${{ inputs.app_name }}-production
-          KUBE_ENV: production
-          KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
-          KUBE_INGRESS_HOSTNAME: ${{ inputs.app_hostname }}
-        run: |
-          source platform/src/scripts/kube/deploy.sh
-          echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"
+        uses: ./platform/.github/actions/deploy
+        with:
+          app_name: ${{ inputs.app_name }}
+          app_env: production
+          app_hostname: ${{ inputs.app_hostname }}
+          branch: ${{ inputs.branch }}
+          docker_registry: ${{ secrets.docker_registry }}
+          docker_username: ${{ secrets.docker_username }}
+          docker_password: ${{ secrets.docker_password }}
+          do_access_token: ${{ secrets.do_access_token }}
+          do_cluster_id: ${{ secrets.do_cluster_id }}
+          doppler_token: ${{ secrets.doppler_token }}
 
   clean:
     runs-on: ubuntu-latest
