@@ -3,37 +3,37 @@ description: 'Deploy built application to Kubernetes'
 inputs:
   app_name:
     required: true
-    description: ''
+    description: 'Application name based on which docker repository, doppler project and kube namespace would be selected'
   app_env:
     required: true
-    description: 'Application environment based on which doppler configuration, kube namespace and kube spec files will be selected'
+    description: 'Application environment based on which doppler configuration, kube namespace and kube spec files would be selected'
   app_hostname:
     required: true
-    description: ''
+    description: 'Application hostname where application would be deployed. Available placeholders - {0} Provided application environment, {1} Branch ID generated from provided branch'
   branch:
     required: true
-    description: ''
+    description: 'Branch from which this workflow is building application from'
   docker_registry:
     required: true
-    description: ''
+    description: 'Docker registry where build images would be pushed and pulled from'
   docker_username:
     required: true
-    description: ''
+    description: 'Username for authenticating with provided docker registry'
   docker_password:
     required: true
-    description: ''
+    description: 'Password for authenticating with provided docker registry'
   do_access_token:
     required: true
-    description: ''
+    description: 'DigitalOcean access token'
   do_cluster_id:
     required: true
-    description: ''
+    description: 'Kubernetes cluster ID on DigitalOcean'
   doppler_token:
     required: false
-    description: ''
+    description: 'Doppler token for accessing environment variables'
 outputs:
   url:
-    description: ''
+    description: 'URL where application has been deployed'
     value: ${{ steps.deploy.outputs.url }}
 runs:
   using: composite
@@ -100,7 +100,7 @@ runs:
         KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_id }}
         KUBE_ENV: ${{ inputs.app_env }}
         KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
-        KUBE_INGRESS_HOSTNAME: ${{ format(inputs.app_hostname, inputs.app_env, inputs.branch_id) }}
+        KUBE_INGRESS_HOSTNAME: ${{ format(inputs.app_hostname, inputs.app_env, steps.extract_branch.outputs.branch_id) }}
       run: |
         source platform/src/scripts/kube/deploy.sh
         echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"
