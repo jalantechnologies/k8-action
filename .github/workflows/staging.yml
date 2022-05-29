@@ -64,42 +64,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
+      - name: Checkout (action)
+        uses: actions/checkout@v2
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          repository: jalantechnologies/platform-github
+          path: action
 
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: false
-          tags: ${{ inputs.app_name }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-          outputs: type=docker,dest=/tmp/myappimage.tar
-
-      # This ugly bit is necessary if you don't want your cache to grow forever
-      # till it hits GitHub's limit of 5GB.
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: myappartifact
-          path: /tmp/myappimage.tar
+      - name: Build application
+        uses: .action/.github/actions/build
 
   lint:
     runs-on: ubuntu-latest
@@ -158,7 +130,7 @@ jobs:
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
-          repository: jalantechnologies/k8-gh-action
+          repository: jalantechnologies/platform-github
           path: action
 
       - name: Install doctl

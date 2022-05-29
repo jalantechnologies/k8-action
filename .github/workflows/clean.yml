@@ -31,7 +31,7 @@ jobs:
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
-          repository: jalantechnologies/k8-gh-action
+          repository: jalantechnologies/platform-github
           path: action
 
       - name: Install doctl
