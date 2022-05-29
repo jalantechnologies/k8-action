@@ -6,6 +6,9 @@ on:
       app_name:
         required: true
         type: string
+      app_env:
+        required: true
+        type: string
       branch:
         required: true
         type: string
@@ -18,11 +21,11 @@ on:
 jobs:
   clean:
     runs-on: ubuntu-latest
-    # make sure to run a single job against the provided branch
+    # make sure to run a single deployment job against the provided branch
     # following will prioritize the most recent invocation and cancel existing ones if any were found
-    # important - make sure preview and clean are using same group
+    # important - make sure deploy and clean are using same group
     concurrency:
-      group: preview-${{ inputs.branch }}
+      group: default-${{ inputs.app_env }}-${{ inputs.branch }}
       cancel-in-progress: true
     steps:
       - name: Checkout (source)
@@ -32,7 +35,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: jalantechnologies/platform-github
-          path: action
+          path: platform
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -52,9 +55,9 @@ jobs:
           echo "##[set-output name=branch;]$(echo $BRANCH_NAME | sed -e 's/[_\/]/-/g')"
           echo "##[set-output name=branch_id;]$(echo $BRANCH_NAME | sed -e 's/[_\/\-]//g' | cut -c -10)"
 
-      - name: Clean up - Preview
+      - name: Clean up
         env:
-          KUBE_NS: ${{ inputs.app_name }}-preview
-          KUBE_APP: ${{ inputs.app_name }}-preview-${{ steps.extract_branch.outputs.branch_id }}
+          KUBE_NS: ${{ inputs.app_name }}-${{ inputs.app_env }}
+          KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_id }}
         run: |
-          source action/src/scripts/kube/clean.sh
+          source platform/src/scripts/kube/clean.sh

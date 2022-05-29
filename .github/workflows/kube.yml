@@ -128,8 +128,9 @@ jobs:
     if: inputs.steps == '' || contains(join(inputs.steps), 'deploy')
     # make sure to run a single deployment job against the provided branch
     # following will prioritize the most recent invocation and cancel existing ones if any were found
+    # important - make sure deploy and clean are using same group
     concurrency:
-      group: deploy-${{ inputs.app_env }}-${{ inputs.branch }}
+      group: default-${{ inputs.app_env }}-${{ inputs.branch }}
       cancel-in-progress: true
     steps:
       - name: Checkout (source)
