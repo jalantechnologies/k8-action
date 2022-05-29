@@ -75,7 +75,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout (source)
         uses: actions/checkout@v2
 
       - name: Checkout (action)
@@ -94,7 +94,7 @@ jobs:
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
     steps:
-      - name: Checkout
+      - name: Checkout (source)
         uses: actions/checkout@v2
 
       - name: Checkout (action)
@@ -113,6 +113,9 @@ jobs:
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'test')
     steps:
+      - name: Checkout (source)
+        uses: actions/checkout@v2
+
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
