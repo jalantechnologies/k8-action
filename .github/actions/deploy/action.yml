@@ -35,9 +35,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Checkout (source)
-      uses: actions/checkout@v2
-
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:

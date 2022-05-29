@@ -61,6 +61,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
@@ -77,6 +80,9 @@ jobs:
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
@@ -113,6 +119,9 @@ jobs:
       group: preview-${{ inputs.branch }}
       cancel-in-progress: true
     steps:
+      - name: Checkout (source)
+        uses: actions/checkout@v2
+
       - name: Checkout (action)
         uses: actions/checkout@v2
         with:
