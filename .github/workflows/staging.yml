@@ -72,6 +72,8 @@ jobs:
 
       - name: Build application
         uses: ./platform/.github/actions/build
+        with:
+          tag: ${{ inputs.app_name }}
 
   lint:
     runs-on: ubuntu-latest

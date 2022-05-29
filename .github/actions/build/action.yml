@@ -1,5 +1,9 @@
 name: 'build'
 description: 'Build application from Dockerfile'
+inputs:
+  tag:
+    required: true
+    description: 'Tag via which built docker image will be tagged'
 runs:
   using: composite
   steps:
@@ -19,7 +23,7 @@ runs:
       with:
         context: .
         push: false
-        tags: ${{ inputs.app_name }}
+        tags: ${{ inputs.tag }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
         outputs: type=docker,dest=/tmp/myappimage.tar
