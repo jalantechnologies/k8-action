@@ -18,6 +18,9 @@ on:
       branch_base:
         required: false
         type: string
+      build_args:
+        required: false
+        type: string
       pull_request_number:
         required: false
         type: number
@@ -88,6 +91,7 @@ jobs:
         uses: ./platform/.github/actions/build
         with:
           tag: ${{ inputs.app_name }}
+          build-args: ${{ inputs.build_args }}
 
   lint:
     runs-on: ubuntu-latest

@@ -4,6 +4,9 @@ inputs:
   tag:
     required: true
     description: 'Tag via which built docker image will be tagged'
+  build-args:
+    required: false
+    description: 'Build time arguments which can be passed when building docker image'
 runs:
   using: composite
   steps:
@@ -24,6 +27,7 @@ runs:
         context: .
         push: false
         tags: ${{ inputs.tag }}
+        build-args: ${{ inputs.build-args }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
         outputs: type=docker,dest=/tmp/myappimage.tar
