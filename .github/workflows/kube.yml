@@ -128,6 +128,8 @@ jobs:
 
       - name: Run automated test cases
         uses: ./platform/.github/actions/test
+        with:
+          tag: ${{ inputs.app_name }}
 
   deploy:
     runs-on: ubuntu-latest
