@@ -12,7 +12,7 @@ inputs:
     description: 'Application hostname where application would be deployed. Available placeholders - {0} Provided application environment, {1} Branch ID generated from provided branch'
   branch:
     required: true
-    description: 'Branch from which this workflow is building application from'
+    description: 'Branch from which this action was run'
   docker_registry:
     required: true
     description: 'Docker registry where build images would be pushed and pulled from'

@@ -6,27 +6,43 @@ on:
       app_name:
         required: true
         type: string
+        description: 'Application name based on which docker repository, doppler project and kube namespace would be selected'
       app_env:
         required: true
         type: string
+        description: 'Application environment based on which doppler configuration, kube namespace and kube spec files would be selected'
       app_hostname:
         required: true
         type: string
+        description: 'Application hostname where application would be deployed. Available placeholders - {0} Provided application environment, {1} Branch ID generated from provided branch'
       branch:
         required: true
         type: string
+        description: 'Branch from which this workflow was run'
       branch_base:
         required: false
         type: string
+        description: 'If analyze is enabled, this refers to the base branch against with sonarqube will run code analysis'
       build_args:
         required: false
         type: string
+        description: 'Build arguments provided to the docker daemon when building the image'
       pull_request_number:
         required: false
         type: number
+        description: 'Pull request number running the workflow against a pull request'
       steps:
         required: false
         type: string
+        description: 'If provided, only specified steps would be run by the workflow. Value to be provided in CSV format.'
+      test_command:
+        required: false
+        type: string
+        description: 'Command to run against the docker image to run test cases. If not provided runs "npm test".'
+      lint_command:
+        required: false
+        type: string
+        description: 'Command to run against the docker image to run linting. If not provided, runs "npm run lint".'
     secrets:
       docker_registry:
         required: true
@@ -111,6 +127,7 @@ jobs:
         uses: ./platform/.github/actions/lint
         with:
           tag: ${{ inputs.app_name }}
+          command: ${{ inputs.lint_command }}
 
   test:
     runs-on: ubuntu-latest
@@ -130,6 +147,7 @@ jobs:
         uses: ./platform/.github/actions/test
         with:
           tag: ${{ inputs.app_name }}
+          command: ${{ inputs.test_command }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -166,17 +184,13 @@ jobs:
           do_cluster_id: ${{ secrets.do_cluster_id }}
           doppler_token: ${{ secrets.doppler_token }}
 
-      - name: Extract pull request number
-        id: extract_pr_number
-        uses: jwalton/gh-find-current-pr@v1
-
       - uses: marocchino/sticky-pull-request-comment@v2
-        # only run this step if we were able to find an open PR
-        if: steps.extract_pr_number.outputs.number
+        # only run this step if a pull request number was provided
+        if: inputs.pull_request_number
         with:
           hide_and_recreate: true
           hide_classify: 'OUTDATED'
-          number: ${{ steps.extract_pr_number.outputs.number }}
+          number: ${{ inputs.pull_request_number }}
           message: |
             Deployment is available at - ${{ steps.deploy.outputs.url }}
 

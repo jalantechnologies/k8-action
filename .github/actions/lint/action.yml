@@ -4,6 +4,10 @@ inputs:
   tag:
     required: true
     description: 'Tag via which docker image will be selected'
+  command:
+    required: false
+    description: 'Command to run against the docker image to run linting. If not provided runs "npm run lint".'
+    default: 'npm run lint'
 runs:
   using: composite
   steps:
@@ -15,6 +19,9 @@ runs:
 
     - name: Run linting
       shell: bash
+      env:
+        DOCKER_IMAGE: ${{ inputs.tag }}
+        DOCKER_COMMAND: ${{ inputs.command }}
       run: |
         docker load --input /tmp/myappimage.tar
-        docker run -t ${{ inputs.tag }} npm run lint
+        docker run -t "$DOCKER_IMAGE" "$DOCKER_COMMAND"

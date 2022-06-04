@@ -4,6 +4,10 @@ inputs:
   tag:
     required: true
     description: 'Tag via which docker image will be selected'
+  command:
+    required: false
+    description: 'Command to run against the docker image to run test cases. If not provided runs "npm test".'
+    default: 'npm test'
 runs:
   using: composite
   steps:
@@ -17,6 +21,7 @@ runs:
       shell: bash
       env:
         DOCKER_IMAGE: ${{ inputs.tag }}
+        DOCKER_COMMAND: ${{ inputs.command }}
       run: |
         docker load --input /tmp/myappimage.tar
         source platform/src/scripts/kube/test.sh
