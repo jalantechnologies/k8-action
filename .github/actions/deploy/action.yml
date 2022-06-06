@@ -96,9 +96,9 @@ runs:
         DOCKER_REGISTRY: ${{ inputs.docker_registry }}
         DOCKER_USERNAME: ${{ inputs.docker_username }}
         DOCKER_PASSWORD: ${{ inputs.docker_password }}
-        DOPPLER_PROJECT: ${{ inputs.app_name }}
-        DOPPLER_CONFIG: ${{ inputs.app_env }}
         DOPPLER_TOKEN: ${{ inputs.doppler_token }}
+        DOPPLER_TOKEN_SECRET_NAME: doppler-${{ inputs.app_name }}-${{ inputs.app_env }}-token-secret
+        DOPPLER_MANAGED_SECRET_NAME: doppler-${{ inputs.app_name }}-${{ inputs.app_env }}-managed-secret
         KUBE_NS: ${{ inputs.app_name }}-${{ inputs.app_env }}
         KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_id }}
         KUBE_ENV: ${{ inputs.app_env }}
