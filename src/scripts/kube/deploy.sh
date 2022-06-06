@@ -29,10 +29,17 @@ fi
 # important - secret might already exist and following will throw an error in that case, handle accordingly
 kubectl create secret docker-registry regcred --docker-server="$DOCKER_REGISTRY" --docker-username="$DOCKER_USERNAME" --docker-password="$DOCKER_PASSWORD" -n "$KUBE_NS" || true
 
-# apply kube config (shared / env)
+# apply kube config (core / shared / env)
 
+kube_core_dir="lib/kube/core"
 kube_shared_dir="lib/kube/shared"
 kube_env_dir="lib/kube/$KUBE_ENV"
+
+if [ -d "$kube_core_dir" ]; then
+    for file in "$kube_core_dir"/*; do
+        envsubst <"$file" | kubectl apply -f -
+    done
+fi
 
 if [ -d "$kube_shared_dir" ]; then
     for file in "$kube_shared_dir"/*; do
