@@ -5,9 +5,8 @@ inputs:
     required: true
     description: 'Tag via which docker image will be selected'
   command:
-    required: false
-    description: 'Command to run against the docker image to run linting. If not provided runs "npm run lint".'
-    default: 'npm run lint'
+    required: true
+    description: 'Command to run against the docker image to run linting'
 runs:
   using: composite
   steps:

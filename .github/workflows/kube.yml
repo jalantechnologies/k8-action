@@ -39,10 +39,12 @@ on:
         required: false
         type: string
         description: 'Command to run against the docker image to run test cases. If not provided runs "npm test".'
+        default: 'npm test'
       lint_command:
         required: false
         type: string
         description: 'Command to run against the docker image to run linting. If not provided, runs "npm run lint".'
+        default: 'npm run lint'
     secrets:
       docker_registry:
         required: true
