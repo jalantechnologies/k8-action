@@ -1,0 +1,11 @@
+# CHANGELOG
+
+## v1
+
+Initial Release
+
+
+## v2
+
+- Added support for autoreloading deployment on doppler config update
+- Added support for cleaning kube deployments based on shared / env templates
