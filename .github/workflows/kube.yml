@@ -35,16 +35,6 @@ on:
         required: false
         type: string
         description: 'If provided, only specified steps would be run by the workflow. Value to be provided in CSV format.'
-      #      test_command:
-      #        required: false
-      #        type: string
-      #        description: 'Command to run against the docker image to run test cases. If not provided runs "npm test".'
-      #        default: 'npm test'
-    #      lint_command:
-    #        required: false
-    #        type: string
-    #        description: 'Command to run against the docker image to run linting. If not provided, runs "npm run lint".'
-    #        default: 'npm run lint'
     secrets:
       docker_registry:
         required: true
