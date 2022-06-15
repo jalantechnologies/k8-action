@@ -57,6 +57,10 @@ for deploying on [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/
 - This guide only documents setting up and integrating Docker Hub with the Kubernetes cluster.
 - After creating a repository on Docker Hub, take a note of the **repository's name**, **account username**, **account password** (can use an access token as well here for more control)
 
+## Setting up DNS
+
+For routing traffic to your cluster, add an `A` record for the cluster's external IP which was obtained from _Setting up the Kubernetes Cluster_ step.
+
 ## Setting up Doppler
 
 - For configuration management and securely providing access to the secrets to application, this setup uses [Doppler](https://www.doppler.com/) which is allows us to inject configuration parameters as environment variables to application runtime.
