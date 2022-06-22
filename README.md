@@ -4,6 +4,10 @@ This is a central repository for GitHub actions and workflows for applications d
 on [Digital Ocean's Kubernetes Cluster](https://www.digitalocean.com/products/kubernetes) is supported, but we are planning to add support
 for deploying on [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/) as well.
 
+## Demo
+
+Our MERN Boilerplate implements the workflows documented here. Find the project [here](https://github.com/jalantechnologies/boilerplate-mern).
+
 ## Requirements
 
 - Digital Ocean account
@@ -173,6 +177,7 @@ jobs:
 ### clean
 
 For tearing up deployments. Destroys kubernetes resources found in:
+
 - `lib/kube/shared`
 - `lib/kube/$KUBE_ENV` - Uses value for `app_env` parameter for `$KUBE_ENV`.
 
@@ -199,10 +204,10 @@ jobs:
 
 **Parameters:**
 
-| **Parameter**   	 | **Type** 	 | **Description**                                                                             	 | **Required (Y / N)** 	 | **Type (Plaintext / Secret)** 	 |
-|-------------------|------------|-----------------------------------------------------------------------------------------------|------------------------|---------------------------------|
-| app_name        	 | string   	 | Application name based on which kube namespace would be selected                            	 | Y                    	 | Plaintext                     	 |
-| app_env         	 | string   	 | Application environment based on which kube namespace and kube spec files would be selected 	 | Y                    	 | Plaintext                     	 |
-| branch          	 | string   	 | Branch from which this workflow was run                                                     	 | Y                    	 | Plaintext                     	 |
-| do_access_token 	 | string   	 | Digital Ocean access token                                                                  	 | Y                    	 | Secret                        	 |
-| do_cluster_id   	 | string   	 | Kubernetes cluster Id on Digital Ocean                                                      	 | Y                    	 | Secret                        	 |
+| **Parameter**   | **Type** | **Description**                                                                             | **Required (Y / N)** | **Type (Plaintext / Secret)** |
+|-----------------|----------|---------------------------------------------------------------------------------------------|----------------------|-------------------------------|
+| app_name        | string   | Application name based on which kube namespace would be selected                            | Y                    | Plaintext                     |
+| app_env         | string   | Application environment based on which kube namespace and kube spec files would be selected | Y                    | Plaintext                     |
+| branch          | string   | Branch from which this workflow was run                                                     | Y                    | Plaintext                     |
+| do_access_token | string   | Digital Ocean access token                                                                  | Y                    | Secret                        |
+| do_cluster_id   | string   | Kubernetes cluster Id on Digital Ocean                                                      | Y                    | Secret                        |
