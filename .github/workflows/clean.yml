@@ -51,14 +51,16 @@ jobs:
         id: extract_branch
         shell: bash
         run: |
-          BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g' | tr '[:upper:]' '[:lower:]')
-          echo "##[set-output name=branch;]$(echo $BRANCH_NAME | sed -e 's/[_\/]/-/g')"
-          echo "##[set-output name=branch_id;]$(echo $BRANCH_NAME | sed -e 's/[_\/\-]//g' | cut -c -10)"
+          BRANCH_HASH=$(sha1sum < <(printf '%s' ${{ inputs.branch }}) | cut -c -15)
+          BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g')
+
+          echo "##[set-output name=branch_hash;]$(echo $BRANCH_HASH)"
+          echo "##[set-output name=branch;]$(echo $BRANCH_NAME)"
 
       - name: Clean up
         env:
           KUBE_NS: ${{ inputs.app_name }}-${{ inputs.app_env }}
-          KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_id }}
+          KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_hash }}
           KUBE_ENV: ${{ inputs.app_env }}
         run: |
           source platform/src/scripts/kube/clean.sh
