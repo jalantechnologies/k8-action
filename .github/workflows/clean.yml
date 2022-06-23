@@ -57,11 +57,11 @@ jobs:
         id: extract_branch
         shell: bash
         run: |
-          BRANCH_HASH=$(sha1sum < <(printf '%s' ${{ inputs.branch }}) | cut -c -15)
           BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g')
+          BRANCH_HASH=$(sha1sum < <(printf '%s' $BRANCH_NAME) | cut -c -15)
 
-          echo "##[set-output name=branch_hash;]$(echo $BRANCH_HASH)"
           echo "##[set-output name=branch;]$(echo $BRANCH_NAME)"
+          echo "##[set-output name=branch_hash;]$(echo $BRANCH_HASH)"
 
       - name: Clean up
         env:
