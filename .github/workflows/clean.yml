@@ -12,6 +12,11 @@ on:
       branch:
         required: true
         type: string
+      platform_version:
+        required: false
+        type: string
+        description: 'Branch from which platform will be checked out to use actions'
+        default: 'v2.1'
     secrets:
       do_access_token:
         required: true
@@ -36,6 +41,7 @@ jobs:
         with:
           repository: jalantechnologies/platform-github
           path: platform
+          ref: ${{ inputs.platform_version }}
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
