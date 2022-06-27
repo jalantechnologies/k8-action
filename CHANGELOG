@@ -9,3 +9,9 @@ Initial Release
 
 - Added support for autoreloading deployment on doppler config update
 - Added support for cleaning kube deployments based on shared / env templates
+
+## v2.1
+
+- Support for branch ID was removed due to frequent collisions
+- Support for branch Hash was added
+- Fixed issue with workflows checking out wrong platform version. Introduced support for 'platform_version'

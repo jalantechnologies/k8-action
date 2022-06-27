@@ -65,9 +65,11 @@ runs:
       id: extract_branch
       shell: bash
       run: |
-        BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g' | tr '[:upper:]' '[:lower:]')
-        echo "##[set-output name=branch;]$(echo $BRANCH_NAME | sed -e 's/[_\/]/-/g')"
-        echo "##[set-output name=branch_id;]$(echo $BRANCH_NAME | sed -e 's/[_\/\-]//g' | cut -c -10)"
+        BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g')
+        BRANCH_HASH=$(sha1sum < <(printf '%s' $BRANCH_NAME) | cut -c -15)
+
+        echo "##[set-output name=branch;]$(echo $BRANCH_NAME)"
+        echo "##[set-output name=branch_hash;]$(echo $BRANCH_HASH)"
 
     - name: Push docker image
       shell: bash
@@ -100,10 +102,10 @@ runs:
         DOPPLER_TOKEN_SECRET_NAME: doppler-${{ inputs.app_name }}-${{ inputs.app_env }}-token-secret
         DOPPLER_MANAGED_SECRET_NAME: doppler-${{ inputs.app_name }}-${{ inputs.app_env }}-managed-secret
         KUBE_NS: ${{ inputs.app_name }}-${{ inputs.app_env }}
-        KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_id }}
+        KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_hash }}
         KUBE_ENV: ${{ inputs.app_env }}
         KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
-        KUBE_INGRESS_HOSTNAME: ${{ format(inputs.app_hostname, inputs.app_env, steps.extract_branch.outputs.branch_id) }}
+        KUBE_INGRESS_HOSTNAME: ${{ format(inputs.app_hostname, inputs.app_env, steps.extract_branch.outputs.branch_hash) }}
       run: |
         source platform/src/scripts/kube/deploy.sh
         echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"

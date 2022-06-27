@@ -35,6 +35,11 @@ on:
         required: false
         type: string
         description: 'If provided, only specified steps would be run by the workflow. Value to be provided in CSV format.'
+      platform_version:
+        required: false
+        type: string
+        description: 'Branch from which platform will be checked out to use actions'
+        default: 'v2.1'
     secrets:
       docker_registry:
         required: true
@@ -94,6 +99,7 @@ jobs:
         with:
           repository: jalantechnologies/platform-github
           path: platform
+          ref: ${{ inputs.platform_version }}
 
       - name: Build application
         uses: ./platform/.github/actions/build
@@ -114,6 +120,7 @@ jobs:
         with:
           repository: jalantechnologies/platform-github
           path: platform
+          ref: ${{ inputs.platform_version }}
 
       - name: Run lint checks
         uses: ./platform/.github/actions/lint
@@ -133,6 +140,7 @@ jobs:
         with:
           repository: jalantechnologies/platform-github
           path: platform
+          ref: ${{ inputs.platform_version }}
 
       - name: Run automated test cases
         uses: ./platform/.github/actions/test
@@ -158,6 +166,7 @@ jobs:
         with:
           repository: jalantechnologies/platform-github
           path: platform
+          ref: ${{ inputs.platform_version }}
 
       - name: Deploy application to Kubernetes
         id: deploy
