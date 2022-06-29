@@ -25,7 +25,7 @@ on:
 
 jobs:
   clean:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     # make sure to run a single deployment job against the provided branch
     # following will prioritize the most recent invocation and cancel existing ones if any were found
     # important - make sure deploy and clean are using same group

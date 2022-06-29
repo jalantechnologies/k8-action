@@ -60,7 +60,7 @@ on:
 
 jobs:
   analyze:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: inputs.steps == '' || contains(join(inputs.steps), 'analyze')
     steps:
       - name: Checkout
@@ -89,7 +89,7 @@ jobs:
             -Dsonar.branch.name=${{ inputs.branch }}
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout (source)
         uses: actions/checkout@v2
@@ -108,7 +108,7 @@ jobs:
           build-args: ${{ inputs.build_args }}
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
     steps:
@@ -128,7 +128,7 @@ jobs:
           tag: ${{ inputs.app_name }}
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'test')
     steps:
@@ -148,7 +148,7 @@ jobs:
           tag: ${{ inputs.app_name }}
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'deploy')
     # make sure to run a single deployment job against the provided branch
@@ -194,7 +194,7 @@ jobs:
             Deployment is available at - ${{ steps.deploy.outputs.url }}
 
   clean:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: ${{ always() && !cancelled() }}
     # list all jobs after which clean up should be performed
     needs: [ 'lint', 'test', 'deploy' ]
