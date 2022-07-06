@@ -217,7 +217,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ always() && !cancelled() }}
     # list all jobs after which clean up should be performed
-    needs: ["lint", "test", "deploy"]
+    needs: ["lint", "test", "deploy", "e2e"]
     steps:
       - uses: geekyeggo/delete-artifact@v1
         with:
