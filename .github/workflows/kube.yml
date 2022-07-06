@@ -39,7 +39,7 @@ on:
         required: false
         type: string
         description: "Branch from which platform will be checked out to use actions"
-        default: "v2.2"
+        default: "feature/e2e"
     secrets:
       docker_registry:
         required: true
