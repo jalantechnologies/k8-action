@@ -44,12 +44,36 @@ Our MERN Boilerplate implements the workflows documented here. Find the project 
 - Install using `helm` - Nginx Ingress
     - `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx`
     - `helm repo update`
+
+  This can be continued in one of the two ways based on the requirement: (1) With load balancer, (2) Without load balancer
+
+  **For setting it up with a load balancer:**
     - `helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true`
+    - To get IP to which DNS entries can be mapped to (A records), run - `kubectl get service nginx-ingress-ingress-nginx-controller -n default`. Note the value in `EXTERNAL-IP` column.
+
+  **For setting it up without a load balancer:**
+    - Create file `nginx-ingress.yaml` with following content:
+    ```yaml
+    controller:
+      kind: DaemonSet
+      daemonset:
+        useHostPort: true
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      service:
+        type: ClusterIP
+    rbac:
+      create: true
+    ```
+    - Run: `helm install ingress-nginx ingress-nginx/ingress-nginx -f nginx-ingress.yaml`
+    - Without a load balancer, DNS configuration is delegated to the external provider using [external-dns](https://github.com/kubernetes-sigs/external-dns).
+      Rest of the steps are provider specific. Listing below links to the setup for common providers, but external dns supports wide range of providers which can be found [here](https://github.com/kubernetes-sigs/external-dns#deploying-to-a-cluster)
+        - [Digital Ocean](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/digitalocean.md)
+        - [Amazon Route53](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md)
+        - [GoDaddy](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/godaddy.md)
+
 - Install using `helm` - Cert Manager
     - `kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml`
-- Get external IP address for your cluster
-    - Our cluster is now ready for handling external traffic.
-    - To get IP to which DNS entries can be mapped to (A records), run - `kubectl get service nginx-ingress-ingress-nginx-controller -n default`. Note the value in `EXTERNAL-IP` column.
 
 ## Setting up Docker repository
 
