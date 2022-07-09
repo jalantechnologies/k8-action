@@ -11,6 +11,7 @@ runs:
   using: composite
   steps:
     - name: Set up Docker Context for Buildx
+      shell: bash
       run: |
         docker context create builders
 
