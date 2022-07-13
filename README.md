@@ -155,6 +155,11 @@ jobs:
     - Otherwise run `npm test`
     - Support for specifying custom command will be added soon.
 
+- `e2e`
+    - Run `docker-compose -f docker-compose.e2e.yml up --exit-code-from app` if `docker-compose.e2e.yml` was found
+    - Otherwise run `npm test`
+    - Support for specifying custom command will be added soon.
+
 - `deploy`
     - Processes and applies kubernetes configuration
     - Looks at following directories for specifications:

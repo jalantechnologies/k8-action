@@ -1,0 +1,25 @@
+name: "test"
+description: "Run automated end-to-end test cases"
+inputs:
+  tag:
+    required: true
+    description: "Tag via which docker image will be selected"
+#  command:
+#    required: true
+#    description: 'Command to run against the docker image to run test cases'
+runs:
+  using: composite
+  steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: myappartifact
+        path: /tmp
+
+    - name: Run e2e tests
+      shell: bash
+      env:
+        DOCKER_IMAGE: ${{ inputs.tag }}
+      run: |
+        docker load --input /tmp/myappimage.tar
+        source platform/src/scripts/kube/e2e.sh
