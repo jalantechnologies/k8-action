@@ -15,3 +15,6 @@ Initial Release
 - Support for branch ID was removed due to frequent collisions
 - Support for branch Hash was added
 - Fixed issue with workflows checking out wrong platform version. Introduced support for 'platform_version'
+
+## v2.2
+- Added support for running E2E action
