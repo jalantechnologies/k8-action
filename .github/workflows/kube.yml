@@ -40,6 +40,11 @@ on:
         type: string
         description: "Branch from which platform will be checked out to use actions"
         default: "main"
+      runner:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+        description: "Runner to run the workflow on"
     secrets:
       docker_registry:
         required: true
@@ -60,7 +65,7 @@ on:
 
 jobs:
   analyze:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     if: inputs.steps == '' || contains(join(inputs.steps), 'analyze')
     steps:
       - name: Checkout
@@ -89,7 +94,7 @@ jobs:
             -Dsonar.branch.name=${{ inputs.branch }}
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     steps:
       - name: Checkout (source)
         uses: actions/checkout@v2
@@ -108,7 +113,7 @@ jobs:
           build-args: ${{ inputs.build_args }}
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
     steps:
@@ -128,7 +133,7 @@ jobs:
           tag: ${{ inputs.app_name }}
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'test')
     steps:
@@ -148,7 +153,7 @@ jobs:
           tag: ${{ inputs.app_name }}
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'e2e')
     steps:
@@ -168,7 +173,7 @@ jobs:
           tag: ${{ inputs.app_name }}
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'deploy')
     # make sure to run a single deployment job against the provided branch
@@ -214,10 +219,10 @@ jobs:
             Deployment is available at - ${{ steps.deploy.outputs.url }}
 
   clean:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     if: ${{ always() && !cancelled() }}
     # list all jobs after which clean up should be performed
-    needs: ["lint", "test", "deploy", "e2e"]
+    needs: [ "lint", "test", "deploy", "e2e" ]
     steps:
       - uses: geekyeggo/delete-artifact@v1
         with:

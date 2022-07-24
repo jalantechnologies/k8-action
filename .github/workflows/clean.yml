@@ -17,6 +17,11 @@ on:
         type: string
         description: 'Branch from which platform will be checked out to use actions'
         default: 'main'
+      runner:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+        description: "Runner to run the workflow on"
     secrets:
       do_access_token:
         required: true
@@ -25,7 +30,7 @@ on:
 
 jobs:
   clean:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     # make sure to run a single deployment job against the provided branch
     # following will prioritize the most recent invocation and cancel existing ones if any were found
     # important - make sure deploy and clean are using same group
