@@ -18,3 +18,6 @@ Initial Release
 
 ## v2.2
 - Added support for running E2E action
+
+## v2.3
+- Fixed issue with e2e workflow where app was unable to start.
