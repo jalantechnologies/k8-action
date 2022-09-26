@@ -100,7 +100,7 @@ on:
 
 jobs:
     production:
-        uses: jalantechnologies/platform-github/.github/workflows/kube.yml@v2
+        uses: jalantechnologies/platform-github/.github/workflows/kube.yml
         with:
             app_name: boilerplate-mern
             app_env: production
@@ -197,7 +197,7 @@ jobs:
     clean:
         # only run when deleting a branch
         if: github.event.ref_type == 'branch'
-        uses: jalantechnologies/platform-github/.github/workflows/clean.yml@v2
+        uses: jalantechnologies/platform-github/.github/workflows/clean.yml
         with:
             app_name: boilerplate-mern
             app_env: preview
@@ -216,3 +216,15 @@ jobs:
 | branch          | string   | Branch from which this workflow was run                                                     | Y                    | Plaintext                     |
 | do_access_token | string   | Digital Ocean access token                                                                  | Y                    | Secret                        |
 | do_cluster_id   | string   | Kubernetes cluster Id on Digital Ocean                                                      | Y                    | Secret                        |
+
+## Development
+
+For releasing a new version:
+
+- Create a new branch for the version (Example - `v2.3`)
+- Update the default value for `platform_version` input to the created branch name (Example - `v2.3`)
+- Commit new updates
+- Update `CHANGELOG` and add the new version, listing out the updates that have been done.
+- Push new changes and raise PR for review
+- `Squash and Merge` new changes once PR is approved
+- Workflows can now use this updated workflow using the branch name. Example - `jalantechnologies/platform-github/.github/workflows/kube.yml@v2.3`. See [Workflows](#workflows) for usage.

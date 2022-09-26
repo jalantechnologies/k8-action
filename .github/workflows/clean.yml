@@ -15,8 +15,8 @@ on:
       platform_version:
         required: false
         type: string
-        description: 'Branch from which platform will be checked out to use actions'
-        default: 'main'
+        description: "Branch from which platform will be checked out to use actions"
+        default: "v2.3"
     secrets:
       do_access_token:
         required: true
@@ -26,12 +26,6 @@ on:
 jobs:
   clean:
     runs-on: ubuntu-latest
-    # make sure to run a single deployment job against the provided branch
-    # following will prioritize the most recent invocation and cancel existing ones if any were found
-    # important - make sure deploy and clean are using same group
-    concurrency:
-      group: default-${{ inputs.app_env }}-${{ inputs.branch }}
-      cancel-in-progress: true
     steps:
       - name: Checkout (source)
         uses: actions/checkout@v2
