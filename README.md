@@ -224,6 +224,7 @@ For releasing a new version:
 - Create a new branch for the version (Example - `v2.3`)
 - Update the default value for `platform_version` input to the created branch name (Example - `v2.3`)
 - Commit new updates
+- To test out changes, push the changes and update the workflow ref. Example - `jalantechnologies/platform-github/.github/workflows/kube.yml@v2.3`
 - Update `CHANGELOG` and add the new version, listing out the updates that have been done.
 - Push new changes and raise PR for review
 - `Squash and Merge` new changes once PR is approved
