@@ -41,7 +41,6 @@ runs:
           -Dsonar.pullrequest.branch=${{ steps.extract_branch.outputs.branch }}
           -Dsonar.pullrequest.base=${{ steps.extract_branch.outputs.branch_base }}
           -Dsonar.qualitygate.wait=true
-          -Dsonar.qualitygate.timeout=300
 
     - name: sonarqube-scan-branch
       uses: sonarsource/sonarqube-scan-action@master
