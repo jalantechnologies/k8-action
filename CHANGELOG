@@ -24,4 +24,4 @@ Initial Release
 ## v2.4
 - [chore] Analyze was moved to its own action
 - [fix] Fixed issue where analyze step does not fails if SonarQube code quality check is failing
-- [fix] Fixed issue where a branch reference was being passed to SonarQube
+- [fix] Fixed issue where analysis was never being run for `main` branch
