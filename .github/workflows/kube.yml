@@ -39,7 +39,7 @@ on:
         required: false
         type: string
         description: "Branch from which platform will be checked out to use actions"
-        default: "v2.3"
+        default: "v2.4"
     secrets:
       docker_registry:
         required: true
@@ -53,9 +53,9 @@ on:
         required: true
       doppler_token:
         required: false
-      sonar_token:
-        required: false
       sonar_host_url:
+        required: false
+      sonar_token:
         required: false
 
 jobs:
@@ -66,27 +66,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: sonarqube-scan-branch
-        uses: sonarsource/sonarqube-scan-action@master
-        if: inputs.pull_request_number
-        env:
-          SONAR_TOKEN: ${{ secrets.sonar_token }}
-          SONAR_HOST_URL: ${{ secrets.sonar_host_url }}
+      - name: Checkout (action)
+        uses: actions/checkout@v2
         with:
-          args: >
-            -Dsonar.pullrequest.key=${{ inputs.pull_request_number }}
-            -Dsonar.pullrequest.branch=${{ inputs.branch }}
-            -Dsonar.pullrequest.base=${{ inputs.branch_base }}
+          repository: jalantechnologies/platform-github
+          path: platform
+          ref: ${{ inputs.platform_version }}
 
-      - name: sonarqube-scan-branch
-        uses: sonarsource/sonarqube-scan-action@master
-        if: inputs.pull_request_number == ''
-        env:
-          SONAR_TOKEN: ${{ secrets.sonar_token }}
-          SONAR_HOST_URL: ${{ secrets.sonar_host_url }}
+      - name: Analyze application
+        uses: ./platform/.github/actions/analyze
         with:
-          args: >
-            -Dsonar.branch.name=${{ inputs.branch }}
+          sonar_host_url: ${{ secrets.sonar_host_url }}
+          sonar_token: ${{ secrets.sonar_token }}
+          branch: ${{ inputs.branch }}
+          branch_base: ${{ inputs.branch_base }}
+          pull_request_number: ${{ inputs.pull_request_number }}
 
   build:
     runs-on: ubuntu-latest
