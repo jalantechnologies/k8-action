@@ -32,6 +32,11 @@ on:
         type: string
         description: "Build context to use with docker. Default to checked out Git directory."
         default: .
+      deploy_root:
+        required: false
+        type: string
+        description: "Directory where kube deployment would look for kubernetes specification files"
+        default: "lib/kube"
       pull_request_number:
         required: false
         type: number
@@ -196,6 +201,7 @@ jobs:
           app_env: ${{ inputs.app_env }}
           app_hostname: ${{ inputs.app_hostname }}
           branch: ${{ inputs.branch }}
+          deploy_root: ${{ inputs.deploy_root }}
           docker_registry: ${{ secrets.docker_registry }}
           docker_username: ${{ secrets.docker_username }}
           docker_password: ${{ secrets.docker_password }}
