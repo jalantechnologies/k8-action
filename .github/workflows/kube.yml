@@ -27,6 +27,11 @@ on:
         required: false
         type: string
         description: "Build arguments provided to the docker daemon when building the image"
+      build_context:
+        required: false
+        type: string
+        description: "Build context to use with docker. Default to checked out Git directory."
+        default: .
       pull_request_number:
         required: false
         type: number
@@ -100,6 +105,7 @@ jobs:
         with:
           tag: ${{ inputs.app_name }}
           build-args: ${{ inputs.build_args }}
+          context: ${{ inputs.build_context }}
 
   lint:
     runs-on: ubuntu-latest

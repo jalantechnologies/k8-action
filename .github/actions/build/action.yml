@@ -7,6 +7,11 @@ inputs:
   build-args:
     required: false
     description: 'Build time arguments which can be passed when building docker image'
+  context:
+    required: false
+    description: 'Build context to use with docker. Default to checked out Git directory.'
+    default: .
+
 runs:
   using: composite
   steps:
@@ -24,7 +29,7 @@ runs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
-        context: .
+        context: ${{ inputs.context }}
         push: false
         tags: ${{ inputs.tag }}
         build-args: ${{ inputs.build-args }}
