@@ -218,6 +218,7 @@ jobs:
         # only run this step if enabled and pull request number was provided
         if: inputs.deploy_annotate_pr == 'true' && inputs.pull_request_number
         with:
+          header: ${{ inputs.app_name }}
           hide_and_recreate: true
           hide_classify: "OUTDATED"
           number: ${{ inputs.pull_request_number }}
