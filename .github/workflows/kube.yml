@@ -37,6 +37,11 @@ on:
         type: string
         description: "Directory where kube deployment would look for kubernetes specification files"
         default: "lib/kube"
+      deploy_annotate_pr:
+        required: false
+        type: boolean
+        description: "Enable pull request annotation with deployment URL"
+        default: true
       pull_request_number:
         required: false
         type: number
@@ -210,8 +215,8 @@ jobs:
           doppler_token: ${{ secrets.doppler_token }}
 
       - uses: marocchino/sticky-pull-request-comment@v2
-        # only run this step if a pull request number was provided
-        if: inputs.pull_request_number
+        # only run this step if enabled and pull request number was provided
+        if: inputs.deploy_annotate_pr == 'true' && inputs.pull_request_number
         with:
           hide_and_recreate: true
           hide_classify: "OUTDATED"
