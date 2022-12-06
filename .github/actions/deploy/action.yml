@@ -61,7 +61,7 @@ runs:
     - name: Download artifact
       uses: actions/download-artifact@v2
       with:
-        name: myappartifact
+        name: image-artifact-${{ inputs.app_name }}
         path: /tmp
 
     - name: Extract branch name
@@ -86,7 +86,7 @@ runs:
         IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:$GITHUB_SHA
 
         docker login $DOCKER_REGISTRY --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
-        docker load --input /tmp/myappimage.tar
+        docker load --input /tmp/image-${{ inputs.app_name }}.tar
         docker tag ${{ inputs.app_name }} $IMAGE_NAME
         docker push $IMAGE_NAME
 

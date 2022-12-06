@@ -22,11 +22,11 @@ runs:
       uses: actions/cache@v2
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        key: ${{ inputs.tag }}-${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
 
-    - name: Build and push
+    - name: Build
       uses: docker/build-push-action@v2
       with:
         context: ${{ inputs.context }}
@@ -35,7 +35,7 @@ runs:
         build-args: ${{ inputs.build-args }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
-        outputs: type=docker,dest=/tmp/myappimage.tar
+        outputs: type=docker,dest=/tmp/image-${{ inputs.tag }}.tar
 
     # This ugly bit is necessary if you don't want your cache to grow forever
     # till it hits GitHub's limit of 5GB.
@@ -51,6 +51,6 @@ runs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: myappartifact
-        path: /tmp/myappimage.tar
+        name: image-artifact-${{ inputs.tag }}
+        path: /tmp/image-${{ inputs.tag }}.tar
         retention-days: 1

@@ -233,5 +233,5 @@ jobs:
     steps:
       - uses: geekyeggo/delete-artifact@v1
         with:
-          name: myappartifact
+          name: image-artifact-${{ inputs.app_name }}
           failOnError: false
