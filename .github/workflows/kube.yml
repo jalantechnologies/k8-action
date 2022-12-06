@@ -216,7 +216,7 @@ jobs:
 
       - uses: marocchino/sticky-pull-request-comment@v2
         # only run this step if enabled and pull request number was provided
-        if: inputs.deploy_annotate_pr == 'true' && inputs.pull_request_number
+        if: inputs.deploy_annotate_pr == true && inputs.pull_request_number
         with:
           header: ${{ inputs.app_name }}
           hide_and_recreate: true
