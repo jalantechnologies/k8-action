@@ -223,7 +223,7 @@ jobs:
           hide_classify: "OUTDATED"
           number: ${{ inputs.pull_request_number }}
           message: |
-            Deployment is available at - ${{ steps.deploy.outputs.url }}
+            Deployment (${{ inputs.app_name }}) is available at - ${{ steps.deploy.outputs.url }}
 
   clean:
     runs-on: ubuntu-latest
