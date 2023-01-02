@@ -25,3 +25,10 @@ Initial Release
 - [chore] Analyze was moved to its own action
 - [fix] Fixed issue where analyze step does not fails if SonarQube code quality check is failing
 - [fix] Fixed issue where analysis was never being run for `main` branch
+
+## v2.5
+- [feat] Added support for `build_context` input which can be used to build docker images from different directory than root
+- [feat] Added support for `deploy_root` input which can be used for specifying kubernetes specification files from different directories
+- [feat] Added support for `deploy_url` output which has the url for deployment made by the workflow
+- [feat] Added support for `deploy_annotate_pr` input which can be used to disable pull request annotation
+- [feat] Added support for github annotation for multiple apps using `header`

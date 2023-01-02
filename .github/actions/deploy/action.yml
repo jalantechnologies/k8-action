@@ -13,6 +13,9 @@ inputs:
   branch:
     required: true
     description: 'Branch from which this action was run'
+  deploy_root:
+    required: true
+    description: "Directory where kube deployment would look for kubernetes specification files"
   docker_registry:
     required: true
     description: 'Docker registry where build images would be pushed and pulled from'
@@ -58,7 +61,7 @@ runs:
     - name: Download artifact
       uses: actions/download-artifact@v2
       with:
-        name: myappartifact
+        name: image-artifact-${{ inputs.app_name }}
         path: /tmp
 
     - name: Extract branch name
@@ -83,7 +86,7 @@ runs:
         IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:$GITHUB_SHA
 
         docker login $DOCKER_REGISTRY --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
-        docker load --input /tmp/myappimage.tar
+        docker load --input /tmp/image-${{ inputs.app_name }}.tar
         docker tag ${{ inputs.app_name }} $IMAGE_NAME
         docker push $IMAGE_NAME
 
@@ -101,6 +104,7 @@ runs:
         DOPPLER_TOKEN: ${{ inputs.doppler_token }}
         DOPPLER_TOKEN_SECRET_NAME: doppler-${{ inputs.app_name }}-${{ inputs.app_env }}-token-secret
         DOPPLER_MANAGED_SECRET_NAME: doppler-${{ inputs.app_name }}-${{ inputs.app_env }}-managed-secret
+        KUBE_ROOT: ${{ inputs.deploy_root }}
         KUBE_NS: ${{ inputs.app_name }}-${{ inputs.app_env }}
         KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_hash }}
         KUBE_ENV: ${{ inputs.app_env }}

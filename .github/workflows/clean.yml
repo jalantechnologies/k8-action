@@ -16,7 +16,7 @@ on:
         required: false
         type: string
         description: "Branch from which platform will be checked out to use actions"
-        default: "v2.4"
+        default: "v2.5"
     secrets:
       do_access_token:
         required: true

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # requires - kubectl
-# requires - KUBE_NS, KUBE_APP, KUBE_ENV, KUBE_DEPLOYMENT_IMAGE, KUBE_INGRESS_HOSTNAME
+# requires - KUBE_ROOT, KUBE_NS, KUBE_APP, KUBE_ENV, KUBE_DEPLOYMENT_IMAGE, KUBE_INGRESS_HOSTNAME
 # requires - DOCKER_REGISTRY, DOCKER_USERNAME, DOCKER_PASSWORD
 # optional - DOPPLER_TOKEN, DOPPLER_TOKEN_SECRET_NAME, DOPPLER_MANAGED_SECRET_NAME
 
@@ -31,9 +31,9 @@ kubectl create secret docker-registry regcred --docker-server="$DOCKER_REGISTRY"
 
 # apply kube config (core / shared / env)
 
-kube_core_dir="lib/kube/core"
-kube_shared_dir="lib/kube/shared"
-kube_env_dir="lib/kube/$KUBE_ENV"
+kube_core_dir="$KUBE_ROOT/core"
+kube_shared_dir="$KUBE_ROOT/shared"
+kube_env_dir="$KUBE_ROOT/$KUBE_ENV"
 
 if [ -d "$kube_core_dir" ]; then
     for file in "$kube_core_dir"/*; do
