@@ -16,7 +16,7 @@ on:
         required: false
         type: string
         description: "Branch from which platform will be checked out to use actions"
-        default: "v2.5"
+        default: "v2.6"
     secrets:
       do_access_token:
         required: true
@@ -28,10 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (source)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout (action)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: jalantechnologies/platform-github
           path: platform

@@ -54,7 +54,7 @@ on:
         required: false
         type: string
         description: "Branch from which platform will be checked out to use actions"
-        default: "v2.5"
+        default: "v2.6"
     secrets:
       docker_registry:
         required: true
@@ -83,10 +83,13 @@ jobs:
     if: inputs.steps == '' || contains(join(inputs.steps), 'analyze')
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          # important - for analyze to work, it needs a deep clone of the repository
+          fetch-depth: 0
 
       - name: Checkout (action)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: jalantechnologies/platform-github
           path: platform
@@ -105,10 +108,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (source)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout (action)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: jalantechnologies/platform-github
           path: platform
@@ -127,10 +130,10 @@ jobs:
     if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
     steps:
       - name: Checkout (source)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout (action)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: jalantechnologies/platform-github
           path: platform
@@ -147,10 +150,10 @@ jobs:
     if: inputs.steps == '' || contains(join(inputs.steps), 'test')
     steps:
       - name: Checkout (source)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout (action)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: jalantechnologies/platform-github
           path: platform
@@ -167,10 +170,10 @@ jobs:
     if: inputs.steps == '' || contains(join(inputs.steps), 'e2e')
     steps:
       - name: Checkout (source)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout (action)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: jalantechnologies/platform-github
           path: platform
@@ -189,10 +192,10 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - name: Checkout (source)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout (action)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: jalantechnologies/platform-github
           path: platform
