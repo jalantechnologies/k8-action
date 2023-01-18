@@ -3,6 +3,10 @@ name: kube
 on:
   workflow_call:
     inputs:
+      analyze_base:
+        required: false
+        type: string
+        description: "If analyze is enabled, this refers to the base branch against with sonarqube will run code analysis"
       app_name:
         required: true
         type: string
@@ -19,10 +23,6 @@ on:
         required: true
         type: string
         description: "Branch from which this workflow was run"
-      branch_base:
-        required: false
-        type: string
-        description: "If analyze is enabled, this refers to the base branch against with sonarqube will run code analysis"
       build_args:
         required: false
         type: string
@@ -101,7 +101,7 @@ jobs:
           sonar_host_url: ${{ secrets.sonar_host_url }}
           sonar_token: ${{ secrets.sonar_token }}
           branch: ${{ inputs.branch }}
-          branch_base: ${{ inputs.branch_base }}
+          analyze_base: ${{ inputs.analyze_base }}
           pull_request_number: ${{ inputs.pull_request_number }}
 
   build:
