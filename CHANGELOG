@@ -32,3 +32,7 @@ Initial Release
 - [feat] Added support for `deploy_url` output which has the url for deployment made by the workflow
 - [feat] Added support for `deploy_annotate_pr` input which can be used to disable pull request annotation
 - [feat] Added support for github annotation for multiple apps using `header`
+
+## 2.6
+- [fix] Fixed issue where analyze was not working for PRs with a non-default branch as target
+- [chore] Updated checkout version to - `actions/checkout@v3`
