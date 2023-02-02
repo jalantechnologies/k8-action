@@ -36,3 +36,9 @@ Initial Release
 ## 2.6
 - [fix] Fixed issue where analyze was not working for PRs with a non-default branch as target
 - [chore] Updated checkout version to - `actions/checkout@v3`
+
+## 2.7
+
+- [feat] added support for deleting docker images
+- [fix] added missing deploy_root to clean workflow
+- [fix] image now uses branch name instead of commit sha
