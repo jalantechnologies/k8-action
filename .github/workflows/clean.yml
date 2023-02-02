@@ -23,6 +23,12 @@ on:
         description: "Branch from which platform will be checked out to use actions"
         default: "v2.6"
     secrets:
+      docker_registry:
+        required: true
+      docker_username:
+        required: false
+      docker_password:
+        required: false
       do_access_token:
         required: true
       do_cluster_id:
@@ -70,3 +76,17 @@ jobs:
           KUBE_ENV: ${{ inputs.app_env }}
         run: |
           source platform/src/scripts/kube/clean.sh
+
+      - name: Clean up - Docker
+        env:
+          DOCKER_REGISTRY: ${{ inputs.docker_registry }}
+          DOCKER_REPOSITORY: ${{ inputs.app_name }}
+          DOCKER_USERNAME: ${{ inputs.docker_username }}
+          DOCKER_PASSWORD: ${{ inputs.docker_password }}
+        if: "${{ env.DOCKER_REGISTRY != '' &&  env.DOCKER_USERNAME != '' && env.DOCKER_PASSWORD != '' }}"
+        shell: bash
+        run: |
+          IMAGE_NAME=$DOCKER_REGISTRY/$DOCKER_REPOSITORY:${{ steps.extract_branch.outputs.branch_hash }}
+
+          docker login $DOCKER_REGISTRY --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+          docker image rm $IMAGE_NAME || true
