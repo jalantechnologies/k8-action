@@ -210,6 +210,7 @@ jobs:
           app_hostname: ${{ inputs.app_hostname }}
           branch: ${{ inputs.branch }}
           deploy_root: ${{ inputs.deploy_root }}
+          deploy_labels: gh/workflow-version=${{ inputs.platform_version }}
           docker_registry: ${{ secrets.docker_registry }}
           docker_username: ${{ secrets.docker_username }}
           docker_password: ${{ secrets.docker_password }}

@@ -3,7 +3,7 @@
 # requires - kubectl
 # requires - KUBE_ROOT, KUBE_NS, KUBE_APP, KUBE_ENV, KUBE_DEPLOYMENT_IMAGE, KUBE_INGRESS_HOSTNAME
 # requires - DOCKER_REGISTRY, DOCKER_USERNAME, DOCKER_PASSWORD
-# optional - DOPPLER_TOKEN, DOPPLER_TOKEN_SECRET_NAME, DOPPLER_MANAGED_SECRET_NAME
+# optional - DOPPLER_TOKEN, DOPPLER_TOKEN_SECRET_NAME, DOPPLER_MANAGED_SECRET_NAME, KUBE_LABELS
 
 echo "deploying to k8"
 echo "kube namespace - $KUBE_NS"
@@ -38,18 +38,30 @@ kube_env_dir="$KUBE_ROOT/$KUBE_ENV"
 if [ -d "$kube_core_dir" ]; then
     for file in "$kube_core_dir"/*; do
         envsubst <"$file" | kubectl apply -f -
+
+        if [ -n "$KUBE_LABELS" ]; then
+            envsubst <"$file" | kubectl label --overwrite -f - $(echo $KUBE_LABELS)
+        fi
     done
 fi
 
 if [ -d "$kube_shared_dir" ]; then
     for file in "$kube_shared_dir"/*; do
         envsubst <"$file" | kubectl apply -f -
+
+        if [ -n "$KUBE_LABELS" ]; then
+            envsubst <"$file" | kubectl label --overwrite -f - $(echo $KUBE_LABELS)
+        fi
     done
 fi
 
 if [ -d "$kube_env_dir" ]; then
     for file in "$kube_env_dir"/*; do
         envsubst <"$file" | kubectl apply -f -
+
+        if [ -n "$KUBE_LABELS" ]; then
+            envsubst <"$file" | kubectl label --overwrite -f - $(echo $KUBE_LABELS)
+        fi
     done
 fi
 
