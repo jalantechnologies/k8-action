@@ -12,6 +12,11 @@ on:
       branch:
         required: true
         type: string
+      deploy_root:
+        required: false
+        type: string
+        description: "Directory where kube deployment would look for kubernetes specification files for cleanup"
+        default: "lib/kube"
       platform_version:
         required: false
         type: string
@@ -57,8 +62,9 @@ jobs:
           echo "##[set-output name=branch;]$(echo $BRANCH_NAME)"
           echo "##[set-output name=branch_hash;]$(echo $BRANCH_HASH)"
 
-      - name: Clean up
+      - name: Clean up - Kube
         env:
+          KUBE_ROOT: ${{ inputs.deploy_root }}
           KUBE_NS: ${{ inputs.app_name }}-${{ inputs.app_env }}
           KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_hash }}
           KUBE_ENV: ${{ inputs.app_env }}
