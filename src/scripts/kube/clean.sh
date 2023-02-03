@@ -14,13 +14,13 @@ kube_env_dir="$KUBE_ROOT/$KUBE_ENV"
 
 if [ -d "$kube_shared_dir" ]; then
     for file in "$kube_shared_dir"/*; do
-        envsubst <"$file" | kubectl delete -f -
+        envsubst <"$file" | kubectl delete --ignore-not-found=true -f -
     done
 fi
 
 if [ -d "$kube_env_dir" ]; then
     for file in "$kube_env_dir"/*; do
-        envsubst <"$file" | kubectl delete -f -
+        envsubst <"$file" | kubectl delete --ignore-not-found=true -f -
     done
 fi
 
