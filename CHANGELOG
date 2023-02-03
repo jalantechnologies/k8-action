@@ -45,3 +45,4 @@ Initial Release
 - [fix] added missing deploy_root to clean workflow
 - [fix] image now uses branch name instead of commit sha
 - [fix] fixed analyze_base param usage for analyze
+- [fix] fixed issue when cleanup fails when no resource was found
