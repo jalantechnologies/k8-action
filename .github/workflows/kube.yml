@@ -54,7 +54,7 @@ on:
         required: false
         type: string
         description: "Branch from which platform will be checked out to use actions"
-        default: "v2.6"
+        default: "v2.7"
     secrets:
       docker_registry:
         required: true
@@ -101,7 +101,7 @@ jobs:
           sonar_host_url: ${{ secrets.sonar_host_url }}
           sonar_token: ${{ secrets.sonar_token }}
           branch: ${{ inputs.branch }}
-          analyze_base: ${{ inputs.analyze_base }}
+          branch_base: ${{ inputs.analyze_base }}
           pull_request_number: ${{ inputs.pull_request_number }}
 
   build:
@@ -210,6 +210,7 @@ jobs:
           app_hostname: ${{ inputs.app_hostname }}
           branch: ${{ inputs.branch }}
           deploy_root: ${{ inputs.deploy_root }}
+          deploy_labels: gh/workflow-version=${{ inputs.platform_version }}
           docker_registry: ${{ secrets.docker_registry }}
           docker_username: ${{ secrets.docker_username }}
           docker_password: ${{ secrets.docker_password }}
