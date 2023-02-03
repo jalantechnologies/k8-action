@@ -101,7 +101,7 @@ jobs:
           sonar_host_url: ${{ secrets.sonar_host_url }}
           sonar_token: ${{ secrets.sonar_token }}
           branch: ${{ inputs.branch }}
-          analyze_base: ${{ inputs.analyze_base }}
+          branch_base: ${{ inputs.analyze_base }}
           pull_request_number: ${{ inputs.pull_request_number }}
 
   build:
