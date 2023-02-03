@@ -12,6 +12,13 @@ echo "kube env - $KUBE_ENV"
 echo "kube deployment image - $KUBE_DEPLOYMENT_IMAGE"
 echo "kube ingress hostname - $KUBE_INGRESS_HOSTNAME"
 
+kube_pre_deploy_script="$KUBE_ROOT/scripts/pre-deploy.sh"
+kube_post_deploy_script="$KUBE_ROOT/scripts/post-deploy.sh"
+
+if [ -f "$kube_pre_deploy_script" ]; then
+    source "$kube_pre_deploy_script"
+fi
+
 # setup kube namespace for the app
 kubectl get namespace "$KUBE_NS" || kubectl create namespace "$KUBE_NS"
 
@@ -63,6 +70,10 @@ if [ -d "$kube_env_dir" ]; then
             envsubst <"$file" | kubectl label --overwrite -f - $(echo $KUBE_LABELS)
         fi
     done
+fi
+
+if [ -f "$kube_post_deploy_script" ]; then
+    source "$kube_post_deploy_script"
 fi
 
 echo "deployed to - https://$KUBE_INGRESS_HOSTNAME"

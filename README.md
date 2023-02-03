@@ -178,6 +178,9 @@ jobs:
         - `KUBE_ENV` - Value provided for `app_env`
         - `KUBE_DEPLOYMENT_IMAGE` - Deployment image
         - `KUBE_INGRESS_HOSTNAME` - Kubernetes ingress hostname
+    - This step also supports running script before and after running deployment:
+        - `lib/kube/scripts/pre-deploy.sh` - For running a script before deployment
+        - `lib/kube/scripts/post-deploy.sh` - For running a script after deployment
 
 ### clean
 
@@ -185,6 +188,11 @@ For tearing up deployments. Destroys kubernetes resources found in:
 
 - `lib/kube/shared`
 - `lib/kube/$KUBE_ENV` - Uses value for `app_env` parameter for `$KUBE_ENV`.
+
+This step also supports running script before and after running cleanup:
+
+- `lib/kube/scripts/pre-clean.sh` - For running a script before cleanup
+- `lib/kube/scripts/post-clean.sh` - For running a script after cleanup
 
 **Usage:**
 
