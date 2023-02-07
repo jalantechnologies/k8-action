@@ -97,7 +97,9 @@ runs:
         docker tag ${{ inputs.app_name }} $IMAGE_NAME
         docker push $IMAGE_NAME
 
-        echo "##[set-output name=name;]$(echo $IMAGE_NAME)"
+        IMAGE_HASH=$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE_NAME)
+
+        echo "##[set-output name=hash;]$(echo $IMAGE_HASH)"
 
     - name: Deploy to kubernetes
       shell: bash
@@ -115,7 +117,7 @@ runs:
         KUBE_NS: ${{ inputs.app_name }}-${{ inputs.app_env }}
         KUBE_APP: ${{ inputs.app_name }}-${{ inputs.app_env }}-${{ steps.extract_branch.outputs.branch_hash }}
         KUBE_ENV: ${{ inputs.app_env }}
-        KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.name }}
+        KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.hash }}
         KUBE_INGRESS_HOSTNAME: ${{ format(inputs.app_hostname, inputs.app_env, steps.extract_branch.outputs.branch_hash) }}
         KUBE_LABELS: gh/actor=${{ steps.extract_branch.outputs.branch_actor }} gh/branch=${{ steps.extract_branch.outputs.branch_short }} gh/commit=${{ steps.extract_branch.outputs.branch_commit_hash }} ${{ inputs.deploy_labels }}
       run: |
