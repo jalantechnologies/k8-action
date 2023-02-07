@@ -72,11 +72,9 @@ runs:
       shell: bash
       run: |
         BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g')
-        BRANCH_NAME_SHORT=$(printf '%s' $BRANCH_NAME | cut -c -40)
         BRANCH_HASH=$(sha1sum < <(printf '%s' $BRANCH_NAME) | cut -c -15)
 
         echo "##[set-output name=branch;]$(echo $BRANCH_NAME)"
-        echo "##[set-output name=branch_short;]$(echo $BRANCH_NAME_SHORT)"
         echo "##[set-output name=branch_hash;]$(echo $BRANCH_HASH)"
         echo "##[set-output name=branch_commit_hash;]$(echo $GITHUB_SHA)"
         echo "##[set-output name=branch_actor;]$(echo $GITHUB_ACTOR)"
@@ -119,7 +117,7 @@ runs:
         KUBE_ENV: ${{ inputs.app_env }}
         KUBE_DEPLOYMENT_IMAGE: ${{ steps.docker_image.outputs.hash }}
         KUBE_INGRESS_HOSTNAME: ${{ format(inputs.app_hostname, inputs.app_env, steps.extract_branch.outputs.branch_hash) }}
-        KUBE_LABELS: gh/actor=${{ steps.extract_branch.outputs.branch_actor }} gh/branch=${{ steps.extract_branch.outputs.branch_short }} gh/commit=${{ steps.extract_branch.outputs.branch_commit_hash }} ${{ inputs.deploy_labels }}
+        KUBE_LABELS: gh/actor=${{ steps.extract_branch.outputs.branch_actor }} gh/commit=${{ steps.extract_branch.outputs.branch_commit_hash }} ${{ inputs.deploy_labels }}
       run: |
         source platform/src/scripts/kube/deploy.sh
         echo "##[set-output name=url;]$(echo https://$KUBE_INGRESS_HOSTNAME)"
