@@ -21,7 +21,7 @@ on:
         required: false
         type: string
         description: "Branch from which platform will be checked out to use actions"
-        default: "v2.7"
+        default: "v2.8"
     secrets:
       docker_registry:
         required: false
