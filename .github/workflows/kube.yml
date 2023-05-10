@@ -229,13 +229,3 @@ jobs:
           message: |
             Deployment (${{ inputs.app_name }}) is available at - ${{ steps.deploy.outputs.url }}
 
-  clean:
-    runs-on: ubuntu-latest
-    if: ${{ always() && !cancelled() }}
-    # list all jobs after which clean up should be performed
-    needs: [ "lint", "test", "deploy", "e2e" ]
-    steps:
-      - uses: geekyeggo/delete-artifact@v1
-        with:
-          name: image-artifact-${{ inputs.app_name }}
-          failOnError: false
