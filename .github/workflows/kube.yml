@@ -163,11 +163,15 @@ jobs:
       credentials:
         username: ${{ secrets.docker_username }}
         password: ${{ secrets.docker_password }}
-      volumes:
-        - ${{github.workspace}}/app:/volume_mount
+    defaults:
+      run:
+        # workaround for using custom working directories
+        # @see - https://github.com/actions/runner/issues/878#issuecomment-1248930921
+        working-directory: /opt/app
     steps:
       - name: Run lint checks
-        run: ls -a
+        run: |
+          npm run lint
 
   test:
     runs-on: ubuntu-latest
