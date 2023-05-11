@@ -55,9 +55,9 @@ on:
         type: string
         description: "Branch from which platform will be checked out to use actions"
         default: "v2.8"
-    secrets:
       docker_registry:
         required: true
+    secrets:
       docker_username:
         required: true
       docker_password:
@@ -117,7 +117,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      image_ref: ${{ steps.extract_ref.outputs.image_ref }}
+      image_ref: ${{ inputs.docker_registry }}/${{ inputs.app_name }}@${{ steps.build.outputs.image_digest }}
     steps:
       - name: Checkout (source)
         uses: actions/checkout@v3
@@ -145,20 +145,12 @@ jobs:
         id: build
         uses: ./platform/.github/actions/build
         with:
-          tag: ${{ secrets.docker_registry }}/${{ inputs.app_name }}:${{ steps.extract_branch.outputs.branch_hash }}
+          tag: ${{ inputs.docker_registry }}/${{ inputs.app_name }}:${{ steps.extract_branch.outputs.branch_hash }}
           build-args: ${{ inputs.build_args }}
           context: app/${{ inputs.build_context }}
-          docker_registry: ${{ secrets.docker_registry }}
+          docker_registry: ${{ inputs.docker_registry }}
           docker_username: ${{ secrets.docker_username }}
           docker_password: ${{ secrets.docker_password }}
-
-      - name: Extract references
-        id: extract_ref
-        shell: bash
-        run: |
-          IMAGE_REF=${{ secrets.docker_registry }}/${{ inputs.app_name }}@${{ steps.build.outputs.image_digest }}
-
-          echo "##[set-output name=image_ref;]$(echo $IMAGE_REF)"
 
   lint:
     if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
@@ -248,7 +240,7 @@ jobs:
           deploy_root: ${{ inputs.deploy_root }}
           deploy_labels: gh/workflow-version=${{ inputs.platform_version }}
           deploy_image: ${{ needs.build.outputs.image_ref }}
-          docker_registry: ${{ secrets.docker_registry }}
+          docker_registry: ${{ inputs.docker_registry }}
           docker_username: ${{ secrets.docker_username }}
           docker_password: ${{ secrets.docker_password }}
           do_access_token: ${{ secrets.do_access_token }}
