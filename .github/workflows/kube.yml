@@ -174,13 +174,20 @@ jobs:
           npm run lint
 
   test:
-    runs-on: ubuntu-latest
-    needs: build
     if: inputs.steps == '' || contains(join(inputs.steps), 'test')
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ needs.build.outputs.image_ref }}
+      credentials:
+        username: ${{ secrets.docker_username }}
+        password: ${{ secrets.docker_password }}
+    defaults:
+      run:
+        # workaround for using custom working directories
+        # @see - https://github.com/actions/runner/issues/878#issuecomment-1248930921
+        working-directory: /opt/app
     steps:
-      - name: Checkout (source)
-        uses: actions/checkout@v3
-
       - name: Checkout (action)
         uses: actions/checkout@v3
         with:
@@ -188,10 +195,9 @@ jobs:
           path: platform
           ref: ${{ inputs.platform_version }}
 
-      - name: Run automated test cases
-        uses: ./platform/.github/actions/test
-        with:
-          tag: ${{ inputs.app_name }}
+      - name: Run tests
+        run: |
+          source ./platform/src/scripts/kube/test.sh
 
   e2e:
     runs-on: ubuntu-latest
