@@ -95,20 +95,35 @@ jobs:
           path: platform
           ref: ${{ inputs.platform_version }}
 
+      - name: Extract branch name
+        id: extract_branch
+        shell: bash
+        run: |
+          BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g')
+          BRANCH_BASE_NAME=$(echo ${{ inputs.analyze_base }} | sed -e 's/^refs\/heads\///g')
+
+          echo "##[set-output name=branch;]$(echo $BRANCH_NAME)"
+          echo "##[set-output name=branch_base;]$(echo $BRANCH_BASE_NAME)"
+
       - name: Analyze application
         uses: ./platform/.github/actions/analyze
         with:
           sonar_host_url: ${{ secrets.sonar_host_url }}
           sonar_token: ${{ secrets.sonar_token }}
-          branch: ${{ inputs.branch }}
-          branch_base: ${{ inputs.analyze_base }}
+          branch: ${{ steps.extract_branch.outputs.branch }}
+          branch_base: ${{ steps.extract_branch.outputs.branch_base }}
           pull_request_number: ${{ inputs.pull_request_number }}
 
   build:
     runs-on: ubuntu-latest
+    outputs:
+      image_digest: ${{ steps.build.outputs.image_digest }}
     steps:
       - name: Checkout (source)
         uses: actions/checkout@v3
+        # make sure to keep checked in code at different directory to avoid colliding with docker caching
+        with:
+          path: app
 
       - name: Checkout (action)
         uses: actions/checkout@v3
@@ -117,12 +132,25 @@ jobs:
           path: platform
           ref: ${{ inputs.platform_version }}
 
+      - name: Extract branch name
+        id: extract_branch
+        shell: bash
+        run: |
+          BRANCH_NAME=$(echo ${{ inputs.branch }} | sed -e 's/^refs\/heads\///g')
+          BRANCH_HASH=$(sha1sum < <(printf '%s' $BRANCH_NAME) | cut -c -15)
+
+          echo "##[set-output name=branch_hash;]$(echo $BRANCH_HASH)"
+
       - name: Build application
+        id: build
         uses: ./platform/.github/actions/build
         with:
-          tag: ${{ inputs.app_name }}
+          tag: ${{ secrets.docker_registry }}/${{ inputs.app_name }}:${{ steps.extract_branch.outputs.branch_hash }}
           build-args: ${{ inputs.build_args }}
-          context: ${{ inputs.build_context }}
+          context: app/${{ inputs.build_context }}
+          docker_registry: ${{ secrets.docker_registry }}
+          docker_username: ${{ secrets.docker_username }}
+          docker_password: ${{ secrets.docker_password }}
 
   lint:
     runs-on: ubuntu-latest
@@ -211,6 +239,7 @@ jobs:
           branch: ${{ inputs.branch }}
           deploy_root: ${{ inputs.deploy_root }}
           deploy_labels: gh/workflow-version=${{ inputs.platform_version }}
+          deploy_image: ${{ secrets.docker_registry }}/${{ inputs.app_name }}@${{ needs.build.outputs.image_digest }}
           docker_registry: ${{ secrets.docker_registry }}
           docker_username: ${{ secrets.docker_username }}
           docker_password: ${{ secrets.docker_password }}
@@ -228,4 +257,3 @@ jobs:
           number: ${{ inputs.pull_request_number }}
           message: |
             Deployment (${{ inputs.app_name }}) is available at - ${{ steps.deploy.outputs.url }}
-
