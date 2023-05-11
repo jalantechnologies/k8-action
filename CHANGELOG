@@ -46,3 +46,8 @@ Initial Release
 - [fix] image now uses branch name instead of commit sha
 - [fix] fixed analyze_base param usage for analyze
 - [fix] fixed issue when cleanup fails when no resource was found
+
+## 2.8
+
+- [feat] buildx now uses "GitHub cache" (https://docs.docker.com/build/ci/github-actions/cache/) for improved caching
+- [feat] removed "clean" step from "kube" workflow to allow re-running failed workflows
