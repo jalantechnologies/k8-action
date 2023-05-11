@@ -163,16 +163,11 @@ jobs:
       credentials:
         username: ${{ secrets.docker_username }}
         password: ${{ secrets.docker_password }}
+      volumes:
+        - ${{github.workspace}}/app:/volume_mount
     steps:
-      - name: Checkout (action)
-        uses: actions/checkout@v3
-        with:
-          repository: jalantechnologies/platform-github
-          path: platform
-          ref: ${{ inputs.platform_version }}
-
       - name: Run lint checks
-        uses: ./platform/.github/actions/lint
+        run: ls -a
 
   test:
     runs-on: ubuntu-latest
