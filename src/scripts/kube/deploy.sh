@@ -34,7 +34,11 @@ fi
 # create secret for accessing docker images from configured docker registry
 # the secret name is 'regcred' and deployments can be configured to use the following secret to pull docker images
 # important - secret might already exist and following will throw an error in that case, handle accordingly
-kubectl create secret docker-registry regcred --docker-server="$DOCKER_REGISTRY" --docker-username="$DOCKER_USERNAME" --docker-password="$DOCKER_PASSWORD" -n "$KUBE_NS" || true
+kubectl create secret docker-registry regcred --docker-server="$DOCKER_REGISTRY" --docker-username="$DOCKER_USERNAME" --docker-password="$DOCKER_PASSWORD" -n "$KUBE_NS" \
+    --save-config \
+    --dry-run=client \
+    -o yaml | \
+kubectl apply -f -
 
 # apply kube config (core / shared / env)
 
