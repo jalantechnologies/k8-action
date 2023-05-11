@@ -188,16 +188,25 @@ jobs:
         # @see - https://github.com/actions/runner/issues/878#issuecomment-1248930921
         working-directory: /opt/app
     steps:
-      - name: Checkout (action)
-        uses: actions/checkout@v3
-        with:
-          repository: jalantechnologies/platform-github
-          path: platform
-          ref: ${{ inputs.platform_version }}
-
-      - name: Run tests
+      - name: Determine execution mode
+        id: execution
         run: |
-          source ./platform/src/scripts/kube/test.sh
+          if [ -f "docker-compose.test.yml" ]; then
+            echo "##[set-output name=mode;]$(echo "compose")"
+          else
+            echo "##[set-output name=mode;]$(echo "command")"
+          fi
+      - name: Run tests (using compose)
+        if: steps.execution.outputs.mode == 'compose'
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker-compose.test.yml"
+          up-flags: "--exit-code-from app"
+
+      - name: Run tests (using command)
+        if: steps.execution.outputs.mode == 'command'
+        run: |
+          npm test
 
   e2e:
     runs-on: ubuntu-latest
