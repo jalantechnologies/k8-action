@@ -157,8 +157,8 @@ jobs:
           docker_username: ${{ inputs.docker_username }}
           docker_password: ${{ secrets.docker_password }}
 
-  lint:
-    if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
+  checks:
+    #    if: inputs.steps == '' || contains(join(inputs.steps), 'lint')
     needs: build
     runs-on: ubuntu-latest
     container:
@@ -170,15 +170,24 @@ jobs:
       run:
         # workaround for using custom working directories
         # @see - https://github.com/actions/runner/issues/878#issuecomment-1248930921
-        working-directory: /
+        working-directory: /opt/app
+    strategy:
+      matrix:
+        check: [ 'lint', 'test', 'e2e' ]
     steps:
-      - name: Run lint checks
+      - name: Install compose
         run: |
-          ls -a
-
           curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
+
+      - name: Run check - ${{ matrix.check }}
+        run: |
+          if [ -f "docker-compose.${{ matrix.check }}.yml" ]; then
+            docker-compose -f docker-compose.${{ matrix.check }}.yml up --exit-code-from app
+          else
+            npm run ${{ matrix.check }}
+          fi
 
   #  test:
   #    if: inputs.steps == '' || contains(join(inputs.steps), 'test')
