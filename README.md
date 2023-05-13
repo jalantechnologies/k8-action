@@ -1,3 +1,5 @@
+## Deprecated, Use https://github.com/jalantechnologies/github-ci instead ##
+
 # Platform - GitHub
 
 This is a central repository for GitHub actions and workflows for applications deploying on Kubernetes. As of the writing, only deployment
